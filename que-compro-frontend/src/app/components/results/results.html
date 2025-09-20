@@ -1,0 +1,110 @@
+@if(loading){
+  <div class="alert alert-info text-center"> {{ status }} </div>
+}
+
+@if (results.length > 0) {
+  <div>
+    <h3 class="h5 mb-3 text-center">Mejores opciones</h3>
+    <div class="row g-4">
+      @for (r of results; track $index; let i = $index) {
+        <div class="col-12 col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm hover-elevate rounded-4">
+            
+            <!-- Header -->
+            <div class="card-header">
+              <h5 class="card-title mb-0">{{ r.marca }}</h5>
+              <small class="text-muted">{{ r.modelo }}</small>
+              <div class="float-end">⭐ {{ r.calificacion }}/5</div>
+            </div>
+
+            <!-- Imagen -->
+            @if(r.imagen){
+              <img [src]="r.imagen" alt="{{ r.modelo }}" class="card-img-top product-img">
+            }
+
+            <!-- Body -->
+            <div class="card-body">
+              <p><strong>Recomendación:</strong> {{ r.recomendacion }}</p>
+
+              <div class="accordion" [attr.id]="'accordion' + i">
+
+                <!-- Características -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" [attr.id]="'headingCar' + i">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#collapseCar' + i"
+                            aria-expanded="false"
+                            [attr.aria-controls]="'collapseCar' + i">
+                      Características
+                    </button>
+                  </h2>
+                  <div [attr.id]="'collapseCar' + i" class="accordion-collapse collapse"
+                       [attr.data-bs-parent]="'#accordion' + i">
+                    <div class="accordion-body">
+                      <ul>
+                        <li *ngFor="let c of r.caracteristicas">{{ c }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PROS -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" [attr.id]="'headingPro' + i">
+                    <button class="accordion-button collapsed text-success fw-bold" type="button"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#collapsePro' + i"
+                            aria-expanded="false"
+                            [attr.aria-controls]="'collapsePro' + i">
+                      PROS
+                    </button>
+                  </h2>
+                  <div [attr.id]="'collapsePro' + i" class="accordion-collapse collapse"
+                       [attr.data-bs-parent]="'#accordion' + i">
+                    <div class="accordion-body">
+                      <ul>
+                        @for (c of r.pros; track $index) {
+
+                          <li >{{ c }}</li>
+                        }
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CONTRAS -->
+                <div class="accordion-item">
+                  <h2 class="accordion-header" [attr.id]="'headingCon' + i">
+                    <button class="accordion-button collapsed text-danger fw-bold" type="button"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#collapseCon' + i"
+                            aria-expanded="false"
+                            [attr.aria-controls]="'collapseCon' + i">
+                      CONTRAS
+                    </button>
+                  </h2>
+                  <div [attr.id]="'collapseCon' + i" class="accordion-collapse collapse"
+                       [attr.data-bs-parent]="'#accordion' + i">
+                    <div class="accordion-body">
+                      <ul>
+                        <li *ngFor="let c of r.contras">{{ c }}</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer text-center">
+              <a class="btn btn-outline-primary w-100" [href]="r.link" target="_blank">Ver más</a>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

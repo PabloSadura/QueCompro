@@ -1,0 +1,25 @@
+/* Hover cards */
+.hover-elevate {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-elevate:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Imagen productos */
+.product-img {
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 1px solid #eee;
+}
+
+/* Accordion badges */
+.badge-pro {
+  background-color: #d4edda;
+  color: #155724;
+}
+.badge-con {
+  background-color: #f8d7da;
+  color: #721c24;
+}

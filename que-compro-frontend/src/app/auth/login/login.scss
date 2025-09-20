@@ -1,0 +1,38 @@
+/* Card centrada y sombreada */
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Botones */
+.btn {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #007bff, #00c6ff);
+  border-color: transparent;
+}
+
+.btn-stroked-google {
+  border: 2px solid #db4437;
+  color: #db4437;
+  transition: all 0.3s ease;
+}
+
+.btn-stroked-google:hover {
+  background: #db4437;
+  color: #fff;
+}
+
+/* Inputs */
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}

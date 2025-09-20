@@ -1,0 +1,57 @@
+<div class="card shadow-lg rounded-3 mx-auto mt-5 p-4" style="max-width: 400px;">
+  <h2 class="text-center mb-3">Iniciar Sesión</h2>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input
+      type="email"
+      id="email"
+      class="form-control"
+      [(ngModel)]="email"
+      name="email"
+      required
+    />
+  </div>
+
+  <!-- Password -->
+  <div class="mb-3">
+    <label for="password" class="form-label">Contraseña</label>
+    <input
+      type="password"
+      id="password"
+      class="form-control"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+  </div>
+
+  <!-- Signup link -->
+  <p class="text-center">
+    ¿No tienes cuenta?
+    <a [routerLink]="['/signup']" class="link-primary">Crear cuenta</a>
+  </p>
+
+  <!-- Login button -->
+  <button
+    class="btn btn-primary w-100 mb-2 d-flex align-items-center justify-content-center"
+    (click)="onLogin()"
+    [disabled]="loading"
+  >
+    <i class="bi bi-box-arrow-in-right me-2"></i>
+    {{ loading ? 'Cargando...' : 'Ingresar' }}
+  </button>
+
+  <!-- Google login -->
+  <button
+    class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center"
+    (click)="onGoogleLogin()"
+  >
+    <i class="bi bi-google me-2"></i>
+    Iniciar sesión con Google
+  </button>
+
+  <!-- Error -->
+  <p *ngIf="error" class="text-danger text-center mt-3">{{ error }}</p>
+</div>

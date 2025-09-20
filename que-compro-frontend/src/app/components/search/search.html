@@ -1,0 +1,33 @@
+<div class="search-box">
+  <input
+    type="text"
+    [(ngModel)]="query"
+    placeholder="Buscar productos..."
+    class="form-control"
+  />
+
+  <div class="row mt-2">
+    <div class="col">
+      <input
+        type="number"
+        [(ngModel)]="minPrice"
+        placeholder="Precio mínimo"
+        class="form-control"
+      />
+    </div>
+    <div class="col">
+      <input
+        type="number"
+        [(ngModel)]="maxPrice"
+        placeholder="Precio máximo"
+        class="form-control"
+      />
+    </div>
+  </div>
+
+  <button class="btn btn-outline-secondary w-100 mt-3" (click)="onSearch()">
+    <i class="bi bi-robot me-2"></i>
+    Buscar
+  </button>
+</div>
+  
