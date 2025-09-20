@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const requestLogger = require("./middleware/requestLogger");
 const searchRoutes = require("./routes/search.routes");
+const historyRoutes = require("./routes/history.routes");
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -11,6 +12,7 @@ app.use(requestLogger);
 
 // Rutas
 app.use("/api/search", searchRoutes);
+app.use("/api/history", historyRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err);

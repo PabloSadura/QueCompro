@@ -18,6 +18,7 @@ export interface Product {
 export interface SearchEvent {
  status: string;
   result?: Product[];
+  analisis?: any[];
   error?: string;
 }
 

@@ -1,76 +1,37 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const jsonc = require("jsonc-parser"); // npm install jsonc-parser
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-/**
- * Analiza productos con Gemini y devuelve JSON seguro
- * @param {Array} products - lista de productos (title, price, url, snippets, etc.)
- * @param {string} query - query del usuario
- * @returns {Array} - productos enriquecidos con pros, contras, características, calificación, recomendación
- */
-async function analyzeWithGemini(products, query) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+export async function analyzeWithGemini(products) {
+  try {
+    // 1. Tomamos solo los 3 primeros productos relevantes
+    const topProducts = products.slice(0, 3).map(p => ({
+      titulo: p.titulo || p.title || "Producto sin título",
+      precio: p.precio || p.price || "Desconocido",
+      rating: p.rating || "N/A",
+      tienda: p.tienda || p.source || "No especificado"
+    }));
 
-  const prompt = `
-Eres un experto en compras online. Analiza los siguientes productos y devuelve un JSON válido:
-- marca
-- modelo
-- pros[]
-- contras[]
-- caracteristicas[]
-- precio
-- calificacion (1-5)
-- recomendacion
-- imagen (url)
-- url del producto
+    // 2. Armamos un prompt compacto
+    const prompt = `
+Analiza los siguientes productos y dame:
+- Una recomendación final (cuál conviene y por qué).
+- Lista breve de características.
+- Pros y contras en bullets.
 
 Productos:
-${JSON.stringify(products, null, 2)}
+${topProducts.map((p, i) => 
+  `${i+1}. ${p.titulo} - Precio: ${p.precio} - Rating: ${p.rating} - Tienda: ${p.tienda}`
+).join("\n")}
+    `;
 
-Query del usuario: "${query}"
-
-**Responde SOLO en JSON válido.**
-Escapa correctamente todas las comillas y no incluyas texto fuera del JSON.
-`;
-
-  try {
+    // 3. Llamada a Gemini con prompt reducido
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const result = await model.generateContent(prompt);
-    const raw = result.response.text();
 
-    // 🔹 Sanitización básica
-    const sanitized = raw.replace(/\n/g, " ").replace(/\r/g, "");
-
-    // 🔹 Parsear con jsonc-parser para tolerancia a errores
-    const errors = [];
-    const parsed = jsonc.parse(sanitized, errors, { allowTrailingComma: true });
-
-    if (errors.length) {
-      console.warn("⚠️ Se encontraron errores de parseo en Gemini:", errors);
-      // fallback: devolver algo mínimo
-      return products.map(p => ({
-        ...p,
-        pros: [],
-        contras: [],
-        caracteristicas: [],
-        calificacion: null,
-        recomendacion: "",
-      }));
-    }
-
-    return parsed;
-  } catch (err) {
-    console.error("❌ Error en analyzeWithGemini:", err);
-    // fallback seguro
-    return products.map(p => ({
-      ...p,
-      pros: [],
-      contras: [],
-      caracteristicas: [],
-      calificacion: null,
-      recomendacion: "",
-    }));
+    return result.response.text();
+  } catch (error) {
+    console.error("Error en analyzeWithGemini:", error);
+    return "No se pudo analizar con IA en este momento.";
   }
 }
-
-module.exports = { analyzeWithGemini };

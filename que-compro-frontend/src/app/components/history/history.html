@@ -1,38 +1,14 @@
-<div class="container mt-4">
-  <h2>Historial de Búsquedas</h2>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Historial de búsquedas</h2>
 
-  <div *ngIf="loading" class="text-center mt-3">
-    Cargando historial...
+  <div *ngIf="loading" class="text-center">Cargando historial...</div>
+
+  <div *ngIf="!loading && history.length === 0" class="text-center">
+    No se encontraron búsquedas.
   </div>
 
-  <div *ngIf="!loading && history.length === 0" class="alert alert-info mt-3">
-    No hay historial de búsquedas.
-  </div>
-
-  <div *ngIf="history.length > 0" class="row g-3 mt-3">
-    <div class="col-12" *ngFor="let h of history">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ h.query }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">
-            {{ h.createdAt | date:'short' }}
-          </h6>
-
-          <div class="row g-2 mt-2">
-            <div class="col-12 col-md-4 col-lg-3" *ngFor="let p of h.result">
-              <div class="card h-100">
-                <img *ngIf="p.imagen" [src]="p.imagen" class="card-img-top" alt="{{ p.modelo }}">
-                <div class="card-body p-2">
-                  <p class="mb-1"><strong>{{ p.marca }}</strong> {{ p.modelo }}</p>
-                  <p class="mb-1">$ {{ p.precio }}</p>
-                  <a [href]="p.link" target="_blank" class="btn btn-sm btn-outline-primary w-100">Ver</a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
+  @for (entry of history; track $index) {
+    <app-results [results]="entry.result"></app-results>
+  }
+ 
 </div>

@@ -4,6 +4,6 @@ const { verifyFirebaseToken } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/history", verifyFirebaseToken, getUserHistory);
+router.get("/", verifyFirebaseToken, getUserHistory);
 
 module.exports = router;

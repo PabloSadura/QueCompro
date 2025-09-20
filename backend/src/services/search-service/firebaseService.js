@@ -3,7 +3,7 @@ const admin = require('../../config/firebase') ;
 
 async function saveSearchToFirebase(query, userId, result) {
   const db = admin.firestore();
-  const docRef = db.collection("searches").doc();
+  const docRef = db.collection(process.env.FIRESTORE_COLLECTION).doc();
 
   await docRef.set({
     query,

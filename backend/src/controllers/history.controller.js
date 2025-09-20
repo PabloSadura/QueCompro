@@ -11,7 +11,7 @@ async function getUserHistory(req, res) {
       .limit(50)
       .get();
 
-    const history = snapshot.docs.map(doc => doc.data());
+    const history = snapshot.docs.map(doc => doc.data());    
     res.json(history);
 
   } catch (err) {

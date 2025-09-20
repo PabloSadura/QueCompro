@@ -1,33 +1,34 @@
 import { Component, OnInit } from '@angular/core';
-import { HistoryService, SearchHistoryItem } from '../../services/history.service';
+import { HistoryService } from '../../services/history.service';
+import { Product } from '../../services/search.service';
+import { ResultsComponent } from '../results/results';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
+interface HistoryEntry {
+  query: string;
+  result: Product[];
+  createdAt: string;
+}
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [ResultsComponent, CommonModule],
   templateUrl: './history.html',
-  styleUrl: './history.scss'
 })
 export class HistoryComponent implements OnInit {
-  history: SearchHistoryItem[] = [];
-  loading = false;
+  history: HistoryEntry[] = [];
+  loading = true;
 
   constructor(private historyService: HistoryService) {}
 
-  ngOnInit(): void {
-    this.loadHistory();
-  }
-
-  loadHistory() {
-    this.loading = true;
+  ngOnInit() {
     this.historyService.getHistory().subscribe({
-      next: data => {
+      next: (data) => {
         this.history = data;
         this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         console.error(err);
         this.loading = false;
       }

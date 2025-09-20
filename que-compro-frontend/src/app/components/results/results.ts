@@ -13,4 +13,5 @@ export class ResultsComponent {
   @Input() results: Product[] = [];
   @Input() loading: boolean = false;
   @Input() status : string = '';
+  @Input() analisis:any[]=[];
 }

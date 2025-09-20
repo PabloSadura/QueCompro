@@ -8,6 +8,8 @@ import { AuthService } from '../../services/auth.service';
 interface SearchEvent {
   status: string;
   result?: Product[];
+  analisis?: any[];
+  error?: string;
 }
 
 @Component({
@@ -61,7 +63,10 @@ export class HomeComponent {
       next: (event: SearchEvent) => {
         this.ngZone.run(() => {
           this.status = event.status;
-          if (event.result) this.results = event.result
+          if (event.result)    this.results = (event.analisis  || []).map((p: any, i: number) => ({
+          ...p,
+          ...(event.result?.[i] || {})
+        }));
         });
       },
       error: (err) => {
