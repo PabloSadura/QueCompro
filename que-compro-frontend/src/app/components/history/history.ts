@@ -3,6 +3,7 @@ import { HistoryService } from '../../services/history.service';
 import { Product } from '../../services/search.service';
 import { ResultsComponent } from '../results/results';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface HistoryEntry {
   query: string;
@@ -13,7 +14,7 @@ interface HistoryEntry {
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [ResultsComponent, CommonModule],
+  imports: [ResultsComponent, CommonModule,FormsModule],
   templateUrl: './history.html',
 })
 export class HistoryComponent implements OnInit {

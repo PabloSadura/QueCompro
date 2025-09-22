@@ -1,37 +1,58 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Models } from "openai/resources/models.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-export async function analyzeWithGemini(products) {
+export async function analyzeWithGemini(userQuery) {
   try {
-    // 1. Tomamos solo los 3 primeros productos relevantes
-    const topProducts = products.slice(0, 3).map(p => ({
-      titulo: p.titulo || p.title || "Producto sin título",
-      precio: p.precio || p.price || "Desconocido",
-      rating: p.rating || "N/A",
-      tienda: p.tienda || p.source || "No especificado"
-    }));
+    const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL });
 
-    // 2. Armamos un prompt compacto
     const prompt = `
-Analiza los siguientes productos y dame:
-- Una recomendación final (cuál conviene y por qué).
-- Lista breve de características.
-- Pros y contras en bullets.
+Eres un asistente experto en compras online. 
+El usuario quiere: "${userQuery}".
 
-Productos:
-${topProducts.map((p, i) => 
-  `${i+1}. ${p.titulo} - Precio: ${p.precio} - Rating: ${p.rating} - Tienda: ${p.tienda}`
-).join("\n")}
+Debes:
+1. Seleccionar máximo 5 productos relevantes.
+2. Para cada producto devolver:
+   - id (número incremental)
+   - nombre
+   - descripcion breve
+   - motivo_seleccion
+   - pros (array de 3 a 5 puntos)
+   - contras (array de 3 a 5 puntos)
+3. No inventes precios ni imágenes. Eso lo agregaremos después.
+4. Al final agrega una recomendación final con el producto que tú comprarías.
+
+IMPORTANTE: Responde ÚNICAMENTE en formato JSON válido con esta estructura:
+
+{
+  "products": [
+    {
+      "id": 1,
+      "nombre": "",
+      "descripcion": "",
+      "motivo_seleccion": "",
+      "pros": ["", ""],
+      "contras": ["", ""]
+    }
+  ],
+  "recommendation": ""
+}
     `;
 
-    // 3. Llamada a Gemini con prompt reducido
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    return result.response.text();
+    // Limpieza y parse seguro
+    const cleanText = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    return JSON.parse(cleanText);
   } catch (error) {
     console.error("Error en analyzeWithGemini:", error);
-    return "No se pudo analizar con IA en este momento.";
+    throw error;
   }
 }

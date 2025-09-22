@@ -3,107 +3,96 @@
 }
 
 @if (results.length > 0) {
-  <div>
+  <div class="row g-4">
     <h3 class="h5 mb-3 text-center">Mejores opciones</h3>
-    <div class="row g-4">
-      @for (r of results; track $index; let i = $index) {
-        <div class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm hover-elevate rounded-4">
-            <!-- Header -->
-            <div class="card-header">
-              <h5 class="card-title mb-0">{{ r.marca }}</h5>
-              <small class="text-muted">{{ r.modelo }}</small>
-              <div class="float-end">⭐ {{ r.calificacion }}/5</div>
-            </div>
-
-            <!-- Imagen -->
-            @if(r.imagen){
-              <img [src]="r.imagen" alt="{{ r.modelo }}" class="card-img-top product-img">
-            }
-
-            <!-- Body -->
-            <div class="card-body">
-              <p><strong>Recomendación:</strong> {{ r.recomendacion }}</p>
-
-              <div class="accordion" [attr.id]="'accordion' + i">
-
-                <!-- Características -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" [attr.id]="'headingCar' + i">
-                    <button class="accordion-button collapsed" type="button"
-                            data-bs-toggle="collapse"
-                            [attr.data-bs-target]="'#collapseCar' + i"
-                            aria-expanded="false"
-                            [attr.aria-controls]="'collapseCar' + i">
-                      Características
-                    </button>
-                  </h2>
-                  <div [attr.id]="'collapseCar' + i" class="accordion-collapse collapse"
-                       [attr.data-bs-parent]="'#accordion' + i">
-                    <div class="accordion-body">
-                      <ul>
-                        <li *ngFor="let c of r.caracteristicas">{{ c }}</li>
-                      </ul>
-                    </div>
+    @for (r of results; track $index) {
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm hover-elevate rounded-4">
+          @if (r.imagen) {
+            <img  [src]="r.imagen" alt="{{ r.modelo || r.marca }}" class="card-img-top">
+          }
+          <div class="card-body">
+            <h5 class="card-title">{{ r.modelo || r.marca }}</h5>
+            <p><strong>Precio:</strong> {{ r.precio }}</p>
+            <p><strong>Recomendación:</strong> {{ r.recomendacion }}</p>
+            <div class="accordion" id="accordion{{ $index }}">
+              <!-- Características -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingCar{{ $index }}">
+                  <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#collapseCar'+ $index "
+                  aria-expanded="false" [attr.aria-controls]="'collapseCar'+ $index ">
+                  Características
+                </button>
+              </h2>
+              <div id="collapseCar{{ $index }}" class="accordion-collapse collapse"
+              [attr.aria-labelledby]="'headingCar'+ $index" [attr.data-bs-parent]="'#accordion' + $index">
+              <div class="accordion-body">
+                <ul>
+                  @for (c of r.caracteristicas; track $index) {
+                        <li>{{ c }}</li>
+                      }
+                    </ul>
                   </div>
                 </div>
-
-                <!-- PROS -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" [attr.id]="'headingPro' + i">
-                    <button class="accordion-button collapsed text-success fw-bold" type="button"
-                            data-bs-toggle="collapse"
-                            [attr.data-bs-target]="'#collapsePro' + i"
-                            aria-expanded="false"
-                            [attr.aria-controls]="'collapsePro' + i">
-                      PROS
-                    </button>
-                  </h2>
-                  <div [attr.id]="'collapsePro' + i" class="accordion-collapse collapse"
-                       [attr.data-bs-parent]="'#accordion' + i">
-                    <div class="accordion-body">
-                      <ul>
-                        @for (c of r.pros; track $index) {
-
-                          <li >{{ c }}</li>
-                        }
-                      </ul>
-                    </div>
-                  </div>
+              </div>
+              
+              <!-- Pros -->
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingPros{{ $index }}">
+                  <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#collapsePros'+ $index "
+                  aria-expanded="false" [attr.aria-controls]="'collapsePros'+$index">
+                    PROS
+                  </button>
+                </h2>
+                <div id="collapsePros{{ $index }}" class="accordion-collapse collapse"
+                [attr.aria-labelledby]="'headingPros'+ $index " [attr.data-bs-parent]="'#accordion' + $index ">
+                <div class="accordion-body">
+                  <ul>
+                    @for (p of r.pros; track $index) {
+                      <li >{{ p }}</li>
+                    }
+                  </ul>
                 </div>
-
-                <!-- CONTRAS -->
-                <div class="accordion-item">
-                  <h2 class="accordion-header" [attr.id]="'headingCon' + i">
-                    <button class="accordion-button collapsed text-danger fw-bold" type="button"
-                            data-bs-toggle="collapse"
-                            [attr.data-bs-target]="'#collapseCon' + i"
-                            aria-expanded="false"
-                            [attr.aria-controls]="'collapseCon' + i">
-                      CONTRAS
-                    </button>
-                  </h2>
-                  <div [attr.id]="'collapseCon' + i" class="accordion-collapse collapse"
-                       [attr.data-bs-parent]="'#accordion' + i">
-                    <div class="accordion-body">
-                      <ul>
-                        <li *ngFor="let c of r.contras">{{ c }}</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </div>
-
-            <!-- Footer -->
-            <div class="card-footer text-center">
-              <a class="btn btn-outline-primary w-100" [href]="r.link" target="_blank">Ver más</a>
+            
+            <!-- Contras -->
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingCon{{ $index }}">
+                <button class="accordion-button collapsed" type="button"
+                data-bs-toggle="collapse"
+                [attr.data-bs-target]="'#collapseCon' + $index "
+                aria-expanded="false" [attr.aria-controls]="'collapseCon'+ $index ">
+                CONTRAS
+              </button>
+            </h2>
+            <div id="collapseCon{{ $index }}" class="accordion-collapse collapse"
+            [attr.aria-labelledby]="'headingCon'+ $index " [attr.data-bs-parent]="'accordion'+ $index">
+            <div class="accordion-body">
+              <ul>
+                @for (c of r.contras; track $index) {
+                  <li>{{ c }}</li>
+                    }
+                  </ul>
+                </div>
+              </div>
             </div>
-
           </div>
+          <div class="card-footer text-center">
+            <a [href]="r.link" target="_blank" class="btn btn-outline-primary w-100">Ver más</a>
+          </div>    
         </div>
-      }
+      </div>
     </div>
-  </div>
+  }
+</div>
+
 }
+
+
+
+
