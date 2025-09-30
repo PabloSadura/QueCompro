@@ -1,9 +1,12 @@
-const express = require("express");
-const { getUserHistory } = require("../controllers/history.controller");
-const { verifyFirebaseToken } = require("../middleware/auth");
+import { Router } from "express";
+import  getUserHistory  from "../controllers/history.controller.js";
+import  verifyFirebaseToken  from "../middleware/auth.js";
 
-const router = express.Router();
+
+const router = Router();
 
 router.get("/", verifyFirebaseToken, getUserHistory);
 
-module.exports = router;
+export default router;
+
+

@@ -1,98 +1,75 @@
-@if(loading){
-  <div class="alert alert-info text-center"> {{ status }} </div>
+@if (loading) {
+  <div class="d-flex justify-content-center align-items-center mt-4 p-3 bg-primary-subtle text-primary rounded-4 fw-semibold">
+    <span class="spinner-grow spinner-grow-sm me-3" aria-hidden="true"></span>
+    <span role="status">{{ status }}</span>
+  </div>
 }
 
-@if (results.length > 0) {
-  <div class="row g-4">
-    <h3 class="h5 mb-3 text-center">Mejores opciones</h3>
-    @for (r of results; track $index) {
-      <div class="col-12 col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm hover-elevate rounded-4">
-          @if (r.imagen) {
-            <img  [src]="r.imagen" alt="{{ r.modelo || r.marca }}" class="card-img-top">
-          }
-          <div class="card-body">
-            <h5 class="card-title">{{ r.modelo || r.marca }}</h5>
-            <p><strong>Precio:</strong> {{ r.precio }}</p>
-            <p><strong>Recomendación:</strong> {{ r.recomendacion }}</p>
-            <div class="accordion" id="accordion{{ $index }}">
-              <!-- Características -->
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingCar{{ $index }}">
-                  <button class="accordion-button collapsed" type="button"
-                  data-bs-toggle="collapse"
-                  [attr.data-bs-target]="'#collapseCar'+ $index "
-                  aria-expanded="false" [attr.aria-controls]="'collapseCar'+ $index ">
-                  Características
+@if (productos) {
+  <div class="container py-4">
+    <div class="row mb-4"> 
+      <div class="col-12">
+        <div class="alert alert-success text-center shadow-sm" role="alert">
+          <h5 class="alert-heading fw-bold">Análisis de Gemini:</h5>
+          <p class="mb-0">{{ recomendacionFinal }}</p>
+        </div>
+      </div>
+    </div> 
+    
+    <div class="row d-flex justify-content-center g-4"> 
+      @for (p of productos; track p.product_id) {
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="result-card card w-100 rounded-4 shadow border-0 overflow-hidden">
+            
+            <div class="d-flex justify-content-between p-3 position-absolute top-0 w-100">
+              <span class="px-3 py-1 rounded-pill bg-light text-dark fw-semibold small shadow-sm z-3">
+                {{ p.immersive_details?.brand || p.brand || 'Sin marca' }}
+              </span>
+              <span class="px-3 py-1 rounded-pill bg-light text-dark d-flex align-items-center fw-semibold shadow-sm z-3">
+                <span class="me-1">{{ p.rating || 'N/A' }}</span>
+                <i class="bi bi-star-fill text-warning"></i>
+              </span>
+            </div>
+
+            @if (p.thumbnails && p.thumbnails.length) {
+              <div [id]="'carousel-' + p.product_id" class="carousel slide">
+                <div class="carousel-inner">
+                  @for (img of p.thumbnails; track $index) {
+                    <div class="carousel-item" [class.active]="$index===0">
+                      <img [src]="img" class="d-block w-100 carousel-img" [alt]="p.title">
+                    </div>
+                  }
+                </div>
+                <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Anterior</span>
                 </button>
-              </h2>
-              <div id="collapseCar{{ $index }}" class="accordion-collapse collapse"
-              [attr.aria-labelledby]="'headingCar'+ $index" [attr.data-bs-parent]="'#accordion' + $index">
-              <div class="accordion-body">
-                <ul>
-                  @for (c of r.caracteristicas; track $index) {
-                        <li>{{ c }}</li>
-                      }
-                    </ul>
-                  </div>
-                </div>
+                <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Siguiente</span>
+                </button>
               </div>
+            } @else {
+              <img [src]="p.thumbnail || 'assets/placeholder.png'" class="d-block w-100 card-img-top fallback-img" [alt]="p.title">
+            }
+            
+            <div class="card-body p-4 d-flex flex-column">
+              <h5 class="card-title fw-bold text-dark mb-1 flex-grow-1">{{ p.immersive_details?.title || p.title }}</h5>
+              <div class="d-flex justify-content-between align-items-center my-3">
+                <div class="price fs-4 fw-bolder text-primary">{{ p.price }}</div>
+                <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
+              </div> 
               
-              <!-- Pros -->
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingPros{{ $index }}">
-                  <button class="accordion-button collapsed" type="button"
-                  data-bs-toggle="collapse"
-                  [attr.data-bs-target]="'#collapsePros'+ $index "
-                  aria-expanded="false" [attr.aria-controls]="'collapsePros'+$index">
-                    PROS
-                  </button>
-                </h2>
-                <div id="collapsePros{{ $index }}" class="accordion-collapse collapse"
-                [attr.aria-labelledby]="'headingPros'+ $index " [attr.data-bs-parent]="'#accordion' + $index ">
-                <div class="accordion-body">
-                  <ul>
-                    @for (p of r.pros; track $index) {
-                      <li >{{ p }}</li>
-                    }
-                  </ul>
-                </div>
+              <div class="mt-auto pt-3 border-top">
+                <a [routerLink]="['/product',collectionId, p.product_id]" class="btn btn-primary w-100">
+                  <i class="bi bi-eye-fill me-2"></i>Ver más detalles
+                </a>
               </div>
             </div>
             
-            <!-- Contras -->
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingCon{{ $index }}">
-                <button class="accordion-button collapsed" type="button"
-                data-bs-toggle="collapse"
-                [attr.data-bs-target]="'#collapseCon' + $index "
-                aria-expanded="false" [attr.aria-controls]="'collapseCon'+ $index ">
-                CONTRAS
-              </button>
-            </h2>
-            <div id="collapseCon{{ $index }}" class="accordion-collapse collapse"
-            [attr.aria-labelledby]="'headingCon'+ $index " [attr.data-bs-parent]="'accordion'+ $index">
-            <div class="accordion-body">
-              <ul>
-                @for (c of r.contras; track $index) {
-                  <li>{{ c }}</li>
-                    }
-                  </ul>
-                </div>
-              </div>
-            </div>
           </div>
-          <div class="card-footer text-center">
-            <a [href]="r.link" target="_blank" class="btn btn-outline-primary w-100">Ver más</a>
-          </div>    
         </div>
-      </div>
+      }
     </div>
-  }
-</div>
-
+  </div>
 }
-
-
-
-

@@ -1,64 +1,85 @@
-import fetch from "node-fetch";
+import { getJson } from "serpapi";
+import client from "../../config/redis.js";
+import dotenv from 'dotenv';
+dotenv.config(); // Cargar variables de entorno
 
-const SERPAPI_KEY = process.env.SERPAPI_KEY; // guardá tu API key en .env
-
+const CACHE_EXPIRATION_TIME = 3600; // 1 hora en segundos
 /**
- * Consulta a Google Shopping vía SerpAPI
+ * Busca productos en Google Shopping.
+ * @param {string} query - La consulta del usuario.
+ * @param {string} gl - Código de país.
+ * @param {string} hl - Código de idioma.
+ * @param {string} currency - Moneda.
+ * @param {number} [minPrice] - Precio mínimo opcional.
+ * @param {number} [maxPrice] - Precio máximo opcional.
+ * @returns {Promise<Array<object>>} Array de resultados de Google Shopping.
  */
-async function fetchGoogleShopping(query) {
-  try {
-    const url = `https://serpapi.com/search.json?q=${encodeURIComponent(
-      query
-    )}&engine=google_shopping&api_key=${SERPAPI_KEY}&num=1`;
 
-    const response = await fetch(url);
-    const data = await response.json();
+export async function fetchGoogleShoppingResults(userQuery, countryCode, languageCode, currency, minPrice, maxPrice) {
+    
+    if (!userQuery) throw new Error("La consulta no puede estar vacía.");
 
-    if (data.shopping_results && data.shopping_results.length > 0) {
-      const item = data.shopping_results[0]; // solo el primer resultado
-      return {
-        price: item.price || null,
-        image: item.thumbnail || null,
-        link: item.link || null,
-      };
+    const cacheKey = `serpapi:shopping:${userQuery}:${countryCode}:${languageCode}:${currency}:${minPrice}:${maxPrice}`;
+    try {
+        const cachedData = await client.get(cacheKey);
+        if (cachedData) {
+            console.log("✅ Usando datos de caché para:", userQuery);
+            return JSON.parse(cachedData);
+        }
+    } catch (err) {
+        console.error("❌ Error al acceder a Redis, procediendo sin caché:", err);
     }
 
-    return { price: null, image: null, link: null };
-  } catch (err) {
-    console.error("❌ Error en fetchGoogleShopping:", err.message);
-    return { price: null, image: null, link: null };
-  }
+    const params = {
+        engine: "google_shopping",
+        q: userQuery,
+        gl: countryCode || 'ar',
+        hl: languageCode || 'es',
+        currency: currency || 'ARS',
+        num: 20, // Aumentamos el número para darle más opciones a Gemini
+        api_key: process.env.SERPAPI_KEY,
+    };
+        if (minPrice && !isNaN(minPrice)) params.min_price = minPrice;
+        if (maxPrice && !isNaN(maxPrice)) params.max_price = maxPrice;
+
+    return new Promise((resolve, reject) => {
+        getJson(params, (data) => {
+                if (data.error) {
+                    return reject(new Error(`SerpApi Google Shopping Error: ${data.error} (Query: ${userQuery}), Params: ${JSON.stringify(params)}`));
+                }
+                const results = data.shopping_results || [];
+                client.set(cacheKey, JSON.stringify(results), { EX: CACHE_EXPIRATION_TIME });
+                resolve(results);
+            });
+    });
 }
 
-/**
- * Enriquecer productos con datos de Google Shopping
- */
-export async function enrichProducts(products) {
-  // aseguramos que sea un array
-  const safeProducts = Array.isArray(products) ? products : [products];
+export async function fetchProductImages(productName, gl = "us", hl = "en", num = 3) {
+    if (!productName) return [];
 
-  const enriched = [];
-
-  for (const p of safeProducts) {
-    // datos básicos de la IA
-    const enrichedData = {
-      ...p,
-      price: null,
-      image: null,
-      link: null,
+    const params = {
+        engine: "google_images",
+        q: productName,
+        gl: gl.toLowerCase(),
+        hl: hl.toLowerCase(),
+        num: num,
+        api_key: process.env.SERPAPI_KEY,
     };
 
-    // enriquecemos con Google Shopping
-    const gData = await fetchGoogleShopping(
-      p.nombre || p.modelo || p.marca || ""
-    );
-
-    enrichedData.price = gData.price;
-    enrichedData.image = gData.image;
-    enrichedData.link = gData.link;
-
-    enriched.push(enrichedData);
-  }
-
-  return enriched;
+    return new Promise((resolve, reject) => {
+        getJson(params, (data) => {
+            if (data.error) {
+                console.warn(`SerpApi Google Images Warning for "${productName}": ${data.error}`);
+                return resolve([]); // No rechazar, solo devolver vacío si hay error en la imagen
+            }
+            const imageResults = (data.images_results || []).map(img => ({
+                thumbnail: img.thumbnail,
+                original: img.original,
+                source: img.source,
+                title: img.title
+            }));
+            resolve(imageResults);
+        });
+    });
 }
+

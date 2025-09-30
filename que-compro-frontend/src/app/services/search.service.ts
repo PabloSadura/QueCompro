@@ -1,65 +1,65 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
+import { SearchEvent } from '../interfaces/interfaces';
 
-export interface Product {
-  marca: string;
-  modelo: string;
-  pros: string[];
-  contras: string[];
-  caracteristicas: string[];
-  precio: number;
-  calificacion: number;
-  recomendacion: string;
-  link: string;
-  imagen: string;
-}
 
-export interface SearchEvent {
- status: string;
-  result?: Product[];
-  analisis?: any[];
-  error?: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class SearchService {
-  private baseUrl = 'http://localhost:5000/api/search';
+  private API_URL = 'http://localhost:5000/api/search'; // ⚡ ajustá si cambia tu backend
 
-  constructor(private auth:AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private ngZone: NgZone
+  ) {}
 
-search(query: string, minPrice?: number, maxPrice?: number): Observable<SearchEvent> {
-  return new Observable(observer => {
-    this.auth.getIdToken().then(token => {
-      let url = `${this.baseUrl}/stream?query=${encodeURIComponent(query)}&token=${token}`;
-
-      if (minPrice !== undefined) {
-        url += `&minPrice=${minPrice}`;
-      }
-      if (maxPrice !== undefined) {
-        url += `&maxPrice=${maxPrice}`;
-      }
-
-      const eventSource = new EventSource(url);
-
-      eventSource.onmessage = (event) => {
-        const data: SearchEvent = JSON.parse(event.data);
-        observer.next(data);
-
-        if (data.status === 'Completado' || data.status === 'Error en búsqueda') {
-          observer.complete();
-          eventSource.close();
-        }
-      };
-
-      eventSource.onerror = (err) => {
-        observer.error(err);
-        eventSource.close();
-      };
-    }).catch(err => observer.error(err));
-  });
-}
+  search(
+    query: string,
+    minPrice?: number,  
+    maxPrice?: number,
+    location?: string,
+    currency?: string
+  ): Observable<SearchEvent> {
+    return new Observable<SearchEvent>(observer => {
+      this.auth.getIdToken().then(token => {
+        const url = new URL(`${this.API_URL}/stream`);
+        url.searchParams.append('query', query);
+        if (minPrice) url.searchParams.append('minPrice', minPrice.toString());
+        if (maxPrice) url.searchParams.append('maxPrice', maxPrice.toString());
+        if (location) url.searchParams.append('location', location);
+        if (currency) url.searchParams.append('currency', currency);
+        url.searchParams.append('token', token);
 
 
+        const eventSource = new EventSource(url.toString(), { withCredentials: true });
 
+        eventSource.onmessage = (event) => {
+          this.ngZone.run(() => {
+            try {
+              const data: SearchEvent = JSON.parse(event.data);
+              observer.next(data);
+              
+              // ✅ si llega un evento de "Completado", cerramos el stream
+              if (data.status.trim() === 'Completado') {
+                eventSource.close();
+                observer.complete();
+              }
+            } catch (err) {
+              observer.error(err);
+              eventSource.close();
+            }
+          });
+        };
+
+        eventSource.onerror = (err) => {
+          this.ngZone.run(() => {
+            observer.error(err);
+            eventSource.close();
+          });
+        };
+      }).catch(err => observer.error(err));
+    });
+  }
 }

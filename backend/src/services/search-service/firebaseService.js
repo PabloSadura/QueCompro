@@ -1,8 +1,8 @@
-const admin = require('../../config/firebase') ;
-
+import admin from "../../config/firebase.js";
 
 async function saveSearchToFirebase(query, userId, result) {
   const db = admin.firestore();
+  
   const docRef = db.collection(process.env.FIRESTORE_COLLECTION).doc();
 
   await docRef.set({
@@ -11,8 +11,7 @@ async function saveSearchToFirebase(query, userId, result) {
     result, // objeto con recomendaciones IA
     createdAt: new Date()
   });
-
+   console.log("✅ Historial guardado con ID: ", docRef.id);
   return { id: docRef.id, query, result };
   }
-
-module.exports = { saveSearchToFirebase };
+ export default saveSearchToFirebase

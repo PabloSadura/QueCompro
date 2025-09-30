@@ -1,18 +1,30 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const requestLogger = require("./middleware/requestLogger");
-const searchRoutes = require("./routes/search.routes");
-const historyRoutes = require("./routes/history.routes");
+import dotenv from "dotenv";
+import cors from "cors";
+import express from "express";
+import searchRoutes from "./routes/search.routes.js";
+import historyRoutes from "./routes/history.routes.js";
+import geoLocation from "./routes/geo.routes.js";
+import productDetail from "./routes/product.routes.js";
 
+
+
+dotenv.config()
 const app = express();
-app.use(cors({ origin: "*" }));
+
+const allowedOrigins = ["http://localhost:4200"]; // 
+app.use(cors({ 
+  origin: allowedOrigins,   // no usar "*"
+  credentials: true,        // permite enviar cookies / headers auth
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"] }));
 app.use(express.json());
-app.use(requestLogger);
 
 // Rutas
 app.use("/api/search", searchRoutes);
-app.use("/api/history", historyRoutes)
+app.use("/api/history", historyRoutes);
+app.use("/api/geo", geoLocation);
+app.use("/api/product", productDetail)
+
 
 app.use((err, req, res, next) => {
   console.error(err);

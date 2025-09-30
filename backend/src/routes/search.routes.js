@@ -1,9 +1,11 @@
-const express = require("express");
-const router = express.Router();
-const { handleSearchStream } = require("../controllers/search.controller");
-const { verifyFirebaseToken } = require("../middleware/auth");
+import { Router } from "express";
+import  handleSearchStream  from "../controllers/search.controller.js"
+import  verifyFirebaseToken  from "../middleware/auth.js";
+const router = Router();
 
 // GET SSE
 router.get("/stream", verifyFirebaseToken, handleSearchStream);
 
-module.exports = router;
+export default router;
+
+

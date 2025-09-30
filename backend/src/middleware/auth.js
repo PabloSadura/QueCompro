@@ -1,4 +1,5 @@
-const admin = require("../config/firebase");
+import admin from '../config/firebase.js'
+
 
 async function verifyFirebaseToken(req, res, next) {
   try {
@@ -16,4 +17,5 @@ async function verifyFirebaseToken(req, res, next) {
   }
 }
 
-module.exports = { verifyFirebaseToken };
+
+export default verifyFirebaseToken;

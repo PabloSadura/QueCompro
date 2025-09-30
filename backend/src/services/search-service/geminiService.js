@@ -1,58 +1,55 @@
+// src/services/geminiService.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { Models } from "openai/resources/models.js";
+import dotenv from "dotenv";
+import geminiPrompt from "../../config/geminiPrompt.js";
+dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Clave API desde .env
+const API_KEY = process.env.GEMINI_API_KEY;
 
-export async function analyzeWithGemini(userQuery) {
-  try {
-    const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL });
-
-    const prompt = `
-Eres un asistente experto en compras online. 
-El usuario quiere: "${userQuery}".
-
-Debes:
-1. Seleccionar máximo 5 productos relevantes.
-2. Para cada producto devolver:
-   - id (número incremental)
-   - nombre
-   - descripcion breve
-   - motivo_seleccion
-   - pros (array de 3 a 5 puntos)
-   - contras (array de 3 a 5 puntos)
-3. No inventes precios ni imágenes. Eso lo agregaremos después.
-4. Al final agrega una recomendación final con el producto que tú comprarías.
-
-IMPORTANTE: Responde ÚNICAMENTE en formato JSON válido con esta estructura:
-
-{
-  "products": [
-    {
-      "id": 1,
-      "nombre": "",
-      "descripcion": "",
-      "motivo_seleccion": "",
-      "pros": ["", ""],
-      "contras": ["", ""]
-    }
-  ],
-  "recommendation": ""
+if (!API_KEY) {
+  throw new Error("❌ GEMINI_API_KEY no está definida en las variables de entorno.");
 }
-    `;
 
+const genAI = new GoogleGenerativeAI(API_KEY);
+const model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-1.5-flash" });
+
+function sanitizeGeminiResponse(text) {
+  let cleaned = text.replace(/```(?:json)?/g, "").replace(/```/g, "");
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+  return cleaned.trim();
+}
+
+
+export async function getBestRecommendationFromGemini(userQuery, shoppingResults) {
+  if (!shoppingResults || shoppingResults.length === 0) {
+    return {
+      productos: [],
+      recomendacion_final: "No se encontraron productos para analizar.",
+    };
+  }
+
+  const prompt = geminiPrompt(shoppingResults, userQuery);
+
+    try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text = response.text();
+    const rawText = response.text();
 
-    // Limpieza y parse seguro
-    const cleanText = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    // Limpieza y parseo
+    const cleanText = sanitizeGeminiResponse(rawText);
+    const parsed = JSON.parse(cleanText);
 
-    return JSON.parse(cleanText);
+    return parsed;
   } catch (error) {
-    console.error("Error en analyzeWithGemini:", error);
-    throw error;
+    console.error("❌ Error al comunicarse con Gemini o parsear su respuesta:", error);
+    return {
+      productos: [],
+      recomendacion_final: "Error: Gemini no devolvió un JSON válido.",
+    };
   }
 }

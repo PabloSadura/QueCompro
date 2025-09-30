@@ -1,25 +1,38 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './search.html',
+  styleUrls: ['./search.scss']
 })
 export class SearchComponent {
-  query: string = '';
+  query = '';
   minPrice?: number;
   maxPrice?: number;
 
-  @Output() searchTrigger = new EventEmitter<{ query: string; minPrice?: number; maxPrice?: number }>();
+  // ⚡ Estos valores pueden setearse por geolocalización
+  location = 'US';
+  currency = 'USD';
 
-  onSearch() {  
-      this.searchTrigger.emit({
+  @Output() search = new EventEmitter<{ 
+    query: string; 
+    minPrice?: number; 
+    maxPrice?: number; 
+    location: string; 
+    currency: string; 
+  }>();
+
+  onSubmit() {
+    this.search.emit({
       query: this.query,
       minPrice: this.minPrice,
-      maxPrice: this.maxPrice
+      maxPrice: this.maxPrice,
+      location: this.location,
+      currency: this.currency
     });
   }
 }
