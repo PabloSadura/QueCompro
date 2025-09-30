@@ -1,22 +1,24 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common'; // Import CommonModule
-import { SearchComponent } from '../search/search'; // Asegúrate de que las rutas sean correctas
-import { ResultsComponent } from '../results/results';
+import { SearchComponent } from '../search/search'; 
 import { SearchService } from '../../services/search.service';
 import { AuthService } from '../../services/auth.service';
 import { SearchEvent} from '../../interfaces/interfaces'; // Usa una interfaz para el resultado
 import { SharedDataService } from '../../services/shared-data.service';
 import { RouterModule } from '@angular/router';
+import { ProductCardsComponent } from '../product-card/product-card.component';
+import { DEMO_DATA } from '../../data/demo.data';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, SearchComponent, ResultsComponent],
+  imports: [CommonModule, RouterModule, SearchComponent, ProductCardsComponent],
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit {
   // Un único objeto para almacenar todo el resultado de la búsqueda
   searchResult: SearchEvent | null = null;
+  demoResult: SearchEvent | null = null;
   loading = false;
   status = '';
   isLoggedIn = false;
@@ -36,6 +38,7 @@ export class HomeComponent implements OnInit {
     this.sharedDataService.currentCurrency.subscribe(currency => {
       this.selectedCurrency = currency;
     });
+    this.demoResult = DEMO_DATA;
   }
 
   handleSearch({ query, minPrice, maxPrice, location }: { query: string; minPrice?: number; maxPrice?: number; location: string}) {

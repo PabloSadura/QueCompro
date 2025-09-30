@@ -1,0 +1,142 @@
+@if (loading) {
+  <div class="d-flex justify-content-center align-items-center mt-4 p-3 bg-primary-subtle text-primary rounded-4 fw-semibold">
+    <span class="spinner-grow spinner-grow-sm me-3" aria-hidden="true"></span>
+    <span role="status">{{ status }}</span>
+  </div>
+}
+
+@if (shopping_results?.result?.productos?.length) {
+  <div class="container py-4">
+    <div class="row mb-4"> 
+      <div class="col-12">
+        <div class="alert alert-success text-center shadow-sm" role="alert">
+          <h5 class="alert-heading fw-bold">Análisis IA:</h5>
+          <p class="mb-2" style="max-width: 100%" >{{ shopping_results?.result?.recomendacion_final }}</p>
+        </div>
+      </div>
+    </div> 
+    
+    <div class="row d-flex justify-content-center g-4"> 
+      @for (p of shopping_results?.result?.productos; track p.product_id) {
+        <div class="col-12 col-md-6 col-lg-4 d-flex">
+          <div class="result-card card w-100 rounded-4 shadow border-0 overflow-hidden d-flex flex-column">
+            
+            <div class="d-flex justify-content-between p-3 position-absolute top-0 w-100">
+              <span class="px-3 py-1 rounded-pill bg-light text-dark fw-semibold small shadow-sm z-3">
+                {{ p.immersive_details?.brand || p.brand || 'Sin marca' }}
+              </span>
+              <span class="px-3 py-1 rounded-pill bg-light text-dark d-flex align-items-center fw-semibold shadow-sm z-3">
+                <span class="me-1">{{ p.rating || 'N/A' }}</span>
+                <i class="bi bi-star-fill text-warning"></i>
+              </span>
+            </div>
+            <div class="image-container">
+                @if (p.thumbnails && p.thumbnails.length) {
+                  <div [id]="'carousel-' + p.product_id" class="carousel slide p-2">
+                    <div class="carousel-inner">
+                      @for (img of p.thumbnails; track $index) {
+                        <div class="carousel-item" [class.active]="$index===0">
+                          <img [src]="img" class="card-img rounded mx-auto d-block" [alt]="p.title">
+                        </div>
+                      }
+                    </div>
+                    <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                } @else {
+                  <img [src]="p.thumbnail || 'assets/placeholder.png'" class="d-block w-100 card-img-top fallback-img" [alt]="p.title">
+                }
+
+            </div>
+
+            <div class="card-body p-4 flex-grow-1">
+              <h5 class="card-title fw-bold text-dark mb-1">{{ p.immersive_details?.title || p.title }}</h5>
+              <div class="d-flex justify-content-between align-items-center my-3">
+                <div class="price fs-4 fw-bolder text-primary">{{ p.price }}</div>
+                <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
+              </div> 
+            </div>
+
+            <div class="card-footer p-3 border-top-0 bg-transparent">
+              <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" [attr.data-bs-target]="'#modal-features-' + p.product_id">
+                  Características
+                </button>
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" [attr.data-bs-target]="'#modal-pros-' + p.product_id">
+                  Pros
+                </button>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" [attr.data-bs-target]="'#modal-cons-' + p.product_id">
+                  Contras
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal fade" [id]="'modal-features-' + p.product_id" tabindex="-1" [attr.aria-labelledby]="'label-features-' + p.product_id" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" [id]="'label-features-' + p.product_id">Características</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="list-group list-group-flush">
+                  @for (feature of p.immersive_details?.about_the_product?.features; track $index) {
+                    <li class="list-group-item d-flex justify-content-between">
+                      <strong class="me-3">{{ feature.title }}:</strong>
+                      <span class="text-end">{{ feature.value }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" [id]="'modal-pros-' + p.product_id" tabindex="-1" [attr.aria-labelledby]="'label-pros-' + p.product_id" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-success-subtle">
+                <h1 class="modal-title fs-5" [id]="'label-pros-' + p.product_id"><i class="bi bi-check-circle-fill me-2"></i>Pros</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="list-unstyled">
+                  @for (pro of (p.pros || []); track $index) {
+                    <li class="py-1"><i class="bi bi-check-lg text-success me-2"></i>{{ pro }}</li>
+                  }
+                  @if (!(p.pros || []).length) { <li class="small text-muted">No hay pros.</li> }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" [id]="'modal-cons-' + p.product_id" tabindex="-1" [attr.aria-labelledby]="'label-cons-' + p.product_id" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-danger-subtle">
+                <h1 class="modal-title fs-5" [id]="'label-cons-' + p.product_id"><i class="bi bi-x-circle-fill me-2"></i>Contras</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <ul class="list-unstyled">
+                  @for (con of (p.contras || []); track $index) {
+                    <li class="py-1"><i class="bi bi-dash-circle-fill text-danger me-2"></i>{{ con }}</li>
+                  }
+                  @if (!(p.contras || []).length) { <li class="small text-muted">No hay contras.</li> }
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

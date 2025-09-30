@@ -11,6 +11,7 @@ import { RouterLink, RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ResultsComponent],
   templateUrl: './history.html',
+  styleUrl: './history.scss'
 })
 export class HistoryComponent implements OnInit {
   // Las propiedades ahora usan el tipo correcto

@@ -4,7 +4,7 @@
   <div class="collapse navbar-collapse justify-content-end">
     
     <div class="dropdown me-3">
-      <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         {{ selectedCurrency || 'Moneda' }}
       </button>
       <ul class="dropdown-menu">
@@ -16,7 +16,7 @@
 
     <ng-container *ngIf="user$ | async as user; else guest">
       <span class="me-3">{{ user.displayName || user.email }}</span>
-      <a class="btn btn-outline-primary me-2" 
+      <a class="btn btn-outline-dark me-2" 
         [routerLink]="['/history']"
         title="Ver historial de búsquedas">
         <i class="bi bi-clock-history me-1"></i> Historial

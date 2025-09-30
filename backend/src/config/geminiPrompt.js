@@ -13,36 +13,57 @@
         source: item.source || null,
     }));
 
-    const prompt = `"Eres un analista de productos experto y objetivo. Tu misión es analizar una lista de productos de Google Shopping y recomendar las 3 mejores opciones, proporcionando un análisis 
-                    detallado como si estuvieras ayudando a un consumidor a tomar una decisión informada
-                    **Input del Usuario:**
-                    El usuario buscó: "${userQuery}"
+    const prompt = `
+Eres un analista técnico experto en productos de consumo. 
+Tu misión es revisar los resultados de Google Shopping y recomendar las 3 mejores opciones basándote principalmente en las especificaciones técnicas y en la experiencia de los usuarios cuando existan calificaciones.
 
-                    Estos son los resultados de Google Shopping para analizar:
-                    ${JSON.stringify(formattedResults, null, 2)}
+📌 Contexto de la búsqueda:
+El usuario buscó: "${userQuery}"
 
-                    Tu Tarea:
-                            1.  **Análisis:** Evalúa la lista completa de productos basándote en un balance entre precio, calificaciones de usuario, cantidad de reseñas y reputación del vendedor.
-                            2.  **Selección:** Elige **exactamente 3 productos que sean modelos o artículos distintos** y que representen las mejores opciones de compra.
-                            3.  **Devuelve SOLO un JSON** con el siguiente formato exacto.
+📌 Resultados de Google Shopping:
+${JSON.stringify(formattedResults, null, 2)}
 
-                                
-                            **Estructura de la Respuesta JSON:**
-                            {
-                                "productos_analisis": [
-                                        {
-                                        "product_id": "string (debe ser el 'product_id' EXACTO del producto de Google Shopping, actúa como ID único)",
-                                        "pros": string[],
-                                        "contras": string[]
-                                        }
-                                    ],
-                                "recomendacion_final": "string (Resumen y conclusión del análisis)"
-                            }
-                ⚠️ IMPORTANTE:
-                - "productos_analisis" debe contener exactamente 3 elementos.
-                - Los únicos campos que debes devolver son "product_id", "pros", "contras" y "recomendacion_final". NO incluyas título, precio o enlace.
-                - Devuelve **únicamente JSON**, sin explicaciones ni bloques de código.
-                `;  
+🎯 Tu Tarea:
+1. **Analiza todos los productos** priorizando:
+   - Especificaciones técnicas y características del producto.
+   - Comparación objetiva de funcionalidades relevantes.
+   - Solo si están disponibles: calificaciones de usuarios y cantidad de reseñas, para validar la calidad percibida.
+   - Ignora reputación del vendedor, enlaces o aspectos no técnicos.
+2. **Selecciona exactamente 3 productos distintos** (no repitas el mismo modelo/versión) que representen las mejores opciones técnicas de compra.
+3. Para cada producto elegido, describe de forma clara y breve:
+   - **Pros**: ventajas técnicas y diferenciales.
+   - **Contras**: limitaciones técnicas o posibles debilidades.
+4. **Devuelve exclusivamente un JSON válido**, en el siguiente formato exacto:
+
+📌 Formato de Respuesta:
+{
+  "productos_analisis": [
+    {
+      "product_id": "string (usar exactamente el 'product_id' del producto de Google Shopping)",
+      "pros": ["ventaja técnica 1", "ventaja técnica 2"],
+      "contras": ["limitación técnica 1", "limitación técnica 2"]
+    },
+    {
+      "product_id": "string",
+      "pros": ["..."],
+      "contras": ["..."]
+    },
+    {
+      "product_id": "string",
+      "pros": ["..."],
+      "contras": ["..."]
+    }
+  ],
+  "recomendacion_final": "string (conclusión experta centrada en el desempeño técnico y, si existe, validación por usuarios)"
+}
+
+⚠️ IMPORTANTE:
+- "productos_analisis" debe contener exactamente 3 elementos.
+- Devuelve únicamente los campos solicitados: "product_id", "pros", "contras", "recomendacion_final".
+- No incluyas títulos, precios, enlaces ni texto adicional fuera del JSON.
+- Si no hay reseñas o calificaciones, analiza y compara únicamente por especificaciones técnicas.
+`;
+
      return prompt;
     
  }

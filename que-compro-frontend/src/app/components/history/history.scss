@@ -22,3 +22,9 @@
 .history-scroll::-webkit-scrollbar-thumb:hover {
   background: #7a7a7a;
 }
+
+.history-scroll .list-group-item.active {
+  background-color: #343a40 !important; /* color oscuro */
+  color: white !important;              /* texto blanco */
+  border-color: #343a40 !important;     /* borde igual al fondo */
+}

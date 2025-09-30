@@ -1,17 +1,12 @@
-@if (loading) {
-  <div class="d-flex justify-content-center align-items-center mt-4 p-3 bg-primary-subtle text-primary rounded-4 fw-semibold">
-    <span class="spinner-grow spinner-grow-sm me-3" aria-hidden="true"></span>
-    <span role="status">{{ status }}</span>
-  </div>
-}
 
-@if (productos) {
+@if (productos.length !== 0) {
   <div class="container py-4">
     <div class="row mb-4"> 
       <div class="col-12">
         <div class="alert alert-success text-center shadow-sm" role="alert">
-          <h5 class="alert-heading fw-bold">Análisis de Gemini:</h5>
-          <p class="mb-0">{{ recomendacionFinal }}</p>
+          <h5 class="alert-heading fw-bold">Análisis IA:</h5>
+          <p class="mb-2" style="max-width: 100%" >{{ recomendacionFinal }}</p>
+    
         </div>
       </div>
     </div> 
@@ -60,11 +55,13 @@
                 <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
               </div> 
               
-              <div class="mt-auto pt-3 border-top">
-                <a [routerLink]="['/product',collectionId, p.product_id]" class="btn btn-primary w-100">
-                  <i class="bi bi-eye-fill me-2"></i>Ver más detalles
-                </a>
-              </div>
+              @if (collectionId) {
+                <div class="mt-auto pt-3 border-top">
+                  <a [routerLink]="['/product',collectionId, p.product_id]" class="btn btn-primary w-100">
+                    <i class="bi bi-eye-fill me-2"></i>Ver más detalles
+                  </a>
+                </div>
+              }
             </div>
             
           </div>

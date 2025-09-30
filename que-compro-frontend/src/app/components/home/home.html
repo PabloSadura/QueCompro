@@ -1,12 +1,10 @@
 <app-search (search)="handleSearch($event)"></app-search>
-@if (!isLoggedIn) {
+@if (!searchResult) {
     <div >
-      <p class="text-center mt-4">Esto es una demo de lo que puedes buscar. Inicia sesión para buscar tus propios productos.</p>
-      <app-results ></app-results>
+      <app-product-cards [shopping_results]="demoResult" [loading]="loading" [status]="status"></app-product-cards>
     </div>
 }@else {
-    <div >
-      <app-results [searchResult]="searchResult" [loading]="loading" [status]="status"></app-results>
-    </div>
+    <app-product-cards [shopping_results]="searchResult"[loading]="loading" [status]="status"></app-product-cards>
+    
 }
 

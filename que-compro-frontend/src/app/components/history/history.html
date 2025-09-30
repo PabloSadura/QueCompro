@@ -34,7 +34,6 @@
         <div class="d-flex w-100 justify-content-between">
           <h6 class="mb-1 text-truncate" [title]="item.query">{{ item.query }}</h6>
         </div>
-        <small class="text-muted">{{ item.result.productos.length }} productos encontrados</small>
       </button>
     }
   </div>
@@ -43,8 +42,6 @@
 
         <!-- Columna para mostrar los resultados del item seleccionado -->
         <div class="col-md-8">
-          <!-- Pasamos el objeto 'selectedHistoryItem' completo a app-results -->
-          <!-- El 'searchResult' aquí es el @Input del ResultsComponent -->
           <app-results [historyResult]="selectedHistoryItem"></app-results>
         </div>
       </div>

@@ -1,0 +1,7 @@
+p.collapsed {
+  display: -webkit-box;
+  line-break: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

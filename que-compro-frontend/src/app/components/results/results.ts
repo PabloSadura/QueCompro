@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces'; // Ajusta la ruta
 
 @Component({
@@ -24,9 +24,12 @@ export class ResultsComponent {
   @Input()
   set searchResult(value: SearchEvent | null) {
     if (value) {
+      console.log(value);
+      
       // Desestructuramos el objeto entrante en nuestras propiedades locales.
       this.productos = value.result.productos || [];
       this.collectionId = value.id || ''; // Guardamos el ID de la colección
+      this.recomendacionFinal = value.result.recomendacion_final || '';
     } else {
       // Si el valor es nulo (ej. antes de una búsqueda), reseteamos las propiedades.
       this.productos = [];
