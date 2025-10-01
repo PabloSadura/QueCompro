@@ -36,7 +36,7 @@ export default async function handleSearchStream(req, res) {
     try {
         // 1. Buscar en Google Shopping
         sendEvent({ status: `Buscando en Google Shopping para: ${userQuery} en ${countryCode.toUpperCase()} en ${currency}...` });
-        const shoppingResults = await fetchGoogleShoppingResults(userQuery, countryCode, languageCode, currency, minPrice, maxPrice);
+        const shoppingResults = await fetchGoogleShoppingResults(userId,userQuery, countryCode, languageCode, currency, minPrice, maxPrice);
 
         if (!shoppingResults || shoppingResults.length === 0) {
             sendEvent({ error: "No se encontraron productos en Google Shopping." });

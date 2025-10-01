@@ -17,7 +17,7 @@ const RATING_FILTER_TBS = "mr:1,rt:4";
  * @returns {Promise<Array<object>>} Array de resultados de Google Shopping.
  */
 
-export async function fetchGoogleShoppingResults(userQuery, countryCode, languageCode, currency, minPrice, maxPrice) {
+export async function fetchGoogleShoppingResults(userId, userQuery, countryCode, languageCode, currency, minPrice, maxPrice) {
     
     if (!userQuery) throw new Error("La consulta no puede estar vacía.");
 
