@@ -1,12 +1,15 @@
 import { Component, Input,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {  RouterModule } from '@angular/router';
 import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces'; // Ajusta la ruta
+import { MaterialModule } from '../material/material.module';
+import {MatDialog} from '@angular/material/dialog';
+import { ProductDetailDialogComponent } from '../product-detail-dialog/product-detail-dialog';
 
 @Component({
   selector: 'app-results',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MaterialModule],
   templateUrl: './results.html',
   styleUrls: ['./results.scss']
 })
@@ -18,6 +21,9 @@ export class ResultsComponent {
 
   @Input() loading: boolean = false;
   @Input() status: string = '';
+
+  constructor(public dialog: MatDialog) {}
+
 
   // Usamos un 'setter' para el Input.
   // Este código se ejecuta automáticamente cada vez que 'searchResult' cambia.
@@ -51,4 +57,10 @@ export class ResultsComponent {
       this.collectionId = '';
     }
   }
+  openModal(product: any, type: string): void {
+  this.dialog.open(ProductDetailDialogComponent, {
+    width: '400px',
+    data: { product: product, type: type }, // Pasar los datos al diálogo
+  });
+}
 }

@@ -1,8 +1,17 @@
 
 
-.scroll-thumbs {
-  max-width: 100%;
-  padding-bottom: 4px;
+.custom-aspect-ratio {
+    position: relative;
+    overflow: hidden; 
 }
-
-
+.custom-image-style {
+  width: 100%;
+  height: 300px;
+    object-fit: contain; 
+    object-position: center; 
+    background-color: #ffffff;    
+    display: block;
+}
+.spacer {
+  flex: 1 1 auto;
+}

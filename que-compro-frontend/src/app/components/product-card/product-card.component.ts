@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchEvent } from '../../interfaces/interfaces';
+import { MaterialModule } from '../material/material.module';
 
 @Component({
   selector: 'app-product-cards',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MaterialModule],
   templateUrl: './product-card.component.html',
   styleUrls: ['./product-card.component.scss']
 })

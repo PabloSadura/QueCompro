@@ -1,70 +1,69 @@
-
 @if (productos.length !== 0) {
   <div class="container py-4">
-    <div class="row mb-4"> 
+    <div class="row mb-4">
       <div class="col-12">
-        <div class="alert alert-success text-center shadow-sm" role="alert">
-          <h5 class="alert-heading fw-bold">Análisis IA:</h5>
-          <p class="mb-2" style="max-width: 100%" >{{ recomendacionFinal }}</p>
-    
-        </div>
+        <mat-card class="ia-recommendation-card mat-elevation-z2">
+          <mat-card-content class="text-center">
+            <h5 class="mat-h2 fw-bold">Análisis IA:</h5>
+            <p class="mb-0">{{ recomendacionFinal }}</p>
+          </mat-card-content>
+        </mat-card>
       </div>
-    </div> 
+    </div>
     
-    <div class="row d-flex justify-content-center g-4"> 
+    <div class="row d-flex justify-content-center g-4">
       @for (p of productos; track p.product_id) {
         <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="result-card card w-100 rounded-4 shadow border-0 overflow-hidden">
+          
+          <mat-card class="product-card w-100 mat-elevation-z4">
             
-            <div class="d-flex justify-content-between p-3 position-absolute top-0 w-100">
-              <span class="px-3 py-1 rounded-pill bg-light text-dark fw-semibold small shadow-sm z-3">
-                {{ p.immersive_details?.brand || p.brand || 'Sin marca' }}
-              </span>
-              <span class="px-3 py-1 rounded-pill bg-light text-dark d-flex align-items-center fw-semibold shadow-sm z-3">
+            <div class="info-overlay">
+              <span class="badge mat-elevation-z1 product-brand">{{ p.immersive_details?.brand || p.brand || 'Sin marca' }}</span>
+              <span class="badge mat-elevation-z1 rating-badge">
                 <span class="me-1">{{ p.rating || 'N/A' }}</span>
-                <i class="bi bi-star-fill text-warning"></i>
+                <mat-icon class="star-icon text-warning">star</mat-icon>
               </span>
             </div>
-
-            @if (p.thumbnails && p.thumbnails.length) {
-              <div [id]="'carousel-' + p.product_id" class="carousel slide">
-                <div class="carousel-inner">
-                  @for (img of p.thumbnails; track $index) {
-                    <div class="carousel-item" [class.active]="$index===0">
-                      <img [src]="img" class="d-block w-100 carousel-img" [alt]="p.title">
-                    </div>
-                  }
-                </div>
-                <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Siguiente</span>
-                </button>
-              </div>
-            } @else {
-              <img [src]="p.thumbnail || 'assets/placeholder.png'" class="d-block w-100 card-img-top fallback-img" [alt]="p.title">
-            }
             
-            <div class="card-body p-4 d-flex flex-column">
-              <h5 class="card-title fw-bold text-dark mb-1 flex-grow-1">{{ p.immersive_details?.title || p.title }}</h5>
-              <div class="d-flex justify-content-between align-items-center my-3">
-                <div class="price fs-4 fw-bolder text-primary">{{ p.price }}</div>
-                <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
-              </div> 
-              
-              @if (collectionId) {
-                <div class="mt-auto pt-3 border-top">
-                  <a [routerLink]="['/product',collectionId, p.product_id]" class="btn btn-primary w-100">
-                    <i class="bi bi-eye-fill me-2"></i>Ver más detalles
-                  </a>
+            <div class="image-container custom-aspect-ratio">
+              @if (p.thumbnails && p.thumbnails.length) {
+                <div [id]="'carousel-' + p.product_id" class="carousel slide h-100">
+                  <div class="carousel-inner h-100">
+                    @for (img of p.thumbnails; track $index) {
+                      <div class="carousel-item h-100" [class.active]="$index===0">
+                        <img [src]="img" class="custom-image-style" [alt]="p.title">
+                      </div>
+                    }
+                  </div>
+                  <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + p.product_id" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                  </button>
                 </div>
+              } @else {
+                <img [src]="p.thumbnail || 'assets/placeholder.png'" class="custom-image-style" [alt]="p.title">
               }
             </div>
             
-          </div>
+            <mat-card-content class="p-4 d-flex flex-column">
+              <h5 class="mat-h3 fw-bold text-dark mb-1 flex-grow-1 product-title-limit">{{ p.immersive_details?.title || p.title }}</h5>
+              <div class="d-flex justify-content-between align-items-center my-3">
+                <div class="price mat-h1 fw-bolder text-primary">{{ p.price }}</div>
+                <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
+              </div>
+              
+              <mat-card-actions class="p-0 mt-auto pt-3 border-top w-100 mb-3">
+                  <a [routerLink]="['/product',collectionId, p.product_id]" mat-flat-button color="primary" class="w-100">
+                    <mat-icon class="me-2">visibility</mat-icon>Ver más detalles
+                  </a>
+              </mat-card-actions>
+            </mat-card-content>
+            
+          </mat-card>
         </div>
       }
     </div>

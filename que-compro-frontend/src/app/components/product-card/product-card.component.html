@@ -5,8 +5,9 @@
   </div>
 }
 
-@if (shopping_results?.result?.productos?.length) {
+@if (shopping_results?.result?.productos?.length && !loading) {
   <div class="container py-4">
+    <!-- Resultado IA -->
     <div class="row mb-4"> 
       <div class="col-12">
         <div class="alert alert-success text-center shadow-sm" role="alert">
@@ -15,11 +16,12 @@
         </div>
       </div>
     </div> 
-    
-    <div class="row d-flex justify-content-center g-4"> 
+    <!-- Fin Resultado -->
+     <!-- Cards -->
+    <div class="row d-flex justify-content-center g-4 "> 
       @for (p of shopping_results?.result?.productos; track p.product_id) {
         <div class="col-12 col-md-6 col-lg-4 d-flex">
-          <div class="result-card card w-100 rounded-4 shadow border-0 overflow-hidden d-flex flex-column">
+          <div class="result-card card w-100 rounded-4 shadow border-1 overflow-hidden d-flex flex-column">
             
             <div class="d-flex justify-content-between p-3 position-absolute top-0 w-100">
               <span class="px-3 py-1 rounded-pill bg-light text-dark fw-semibold small shadow-sm z-3">
@@ -30,13 +32,13 @@
                 <i class="bi bi-star-fill text-warning"></i>
               </span>
             </div>
-            <div class="image-container">
+            <div class="image-container custom-aspect-ratio">
                 @if (p.thumbnails && p.thumbnails.length) {
                   <div [id]="'carousel-' + p.product_id" class="carousel slide p-2">
                     <div class="carousel-inner">
                       @for (img of p.thumbnails; track $index) {
                         <div class="carousel-item" [class.active]="$index===0">
-                          <img [src]="img" class="card-img rounded mx-auto d-block" [alt]="p.title">
+                          <img [src]="img" class="custom-image-style" [alt]="p.title">
                         </div>
                       }
                     </div>
@@ -59,6 +61,21 @@
                 <div class="price fs-4 fw-bolder text-primary">{{ p.price }}</div>
                 <span class="small text-muted">({{ p.reviews || 'Sin' }} reviews)</span>
               </div> 
+            </div>
+            <div class="card-body">
+              <h4 class="fs-5 mb-1">Opciones de Compra</h4>
+              <div class="list-group">
+                @for (store of p.immersive_details?.stores; track $index) {
+                  <a [href]="store.link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                      <img [src]="store.logo" class="me-3" style="width: 24px;">
+                      <span class="fw-semibold">{{ store.name }}</span>
+                    </div>
+                    <span class="badge bg-primary rounded-pill fs-6">{{ store.price }}</span>
+                  </a>
+                }
+              </div>
+
             </div>
 
             <div class="card-footer p-3 border-top-0 bg-transparent">
@@ -136,7 +153,10 @@
             </div>
           </div>
         </div>
+
+
       }
     </div>
   </div>
+  
 }

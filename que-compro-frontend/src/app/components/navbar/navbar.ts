@@ -6,10 +6,11 @@ import { User } from 'firebase/auth';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SharedDataService } from '../../services/shared-data.service';
+import { MaterialModule } from '../material/material.module';
 
 @Component({
   selector: 'app-navbar',
-  imports: [FormsModule, CommonModule, RouterLink],
+  imports: [FormsModule, CommonModule, RouterLink, MaterialModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })

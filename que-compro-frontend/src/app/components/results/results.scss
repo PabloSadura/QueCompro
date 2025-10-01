@@ -1,7 +1,58 @@
-p.collapsed {
-  display: -webkit-box;
-  line-break: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Estilo para el Mat-Card de la Recomendación IA (simula el alert-success) */
+.ia-recommendation-card {
+    background-color: #e6f7e9; /* Fondo verde claro (similar a success-subtle) */
+    color: #1a5127; /* Texto verde oscuro */
+    border: 1px solid #c8e6c9;
+}
+
+/* Estilo para asegurar que el contenido de la tarjeta ocupa todo el espacio */
+.product-card {
+    display: flex;
+    flex-direction: column;
+}
+.product-card mat-card-content {
+    flex-grow: 1; /* Permite que el contenido crezca */
+    padding-bottom: 0 !important; /* Ajuste para el Mat-Card-Actions */
+}
+
+/* Overlay para Marca y Rating */
+.info-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    z-index: 10;
+}
+.badge {
+    color: black;
+    font-size: medium;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px; /* rounded-pill */
+    background-color: white;
+    display: flex;
+    align-items: center;
+}
+.rating-badge .star-icon {
+    font-size: 1rem; /* Mat-Icon */
+    height: 1rem;
+    width: 1rem;
+    color: #ffc107; /* text-warning */
+}
+
+.price {
+    color: var(--mat-primary-color, #0d6efd); /* Usar la variable de color Primary de Material */
+}
+
+/* Limitar el título para que no se desborde y mantenga la uniformidad de la tarjeta */
+.product-title-limit {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    min-height: 2.5em; /* Altura mínima para títulos de 1 o 2 líneas */
+}
+/* Grupo de botones para el modal, se hace más pequeño en móvil */
+.button-group-sm button {
+    font-size: 0.8rem;
 }
