@@ -1,12 +1,13 @@
-import { Component, NgZone, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
-import { SearchComponent } from '../search/search'; 
+// src/app/pages/home/home.ts
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { SearchComponent } from '../../components/search/search';
+import { ProductCardsComponent } from '../../components/product-card/product-card.component';
 import { SearchService } from '../../services/search.service';
 import { AuthService } from '../../services/auth.service';
-import { SearchEvent} from '../../interfaces/interfaces'; // Usa una interfaz para el resultado
-import { SharedDataService } from '../../services/shared-data.service';
-import { RouterModule } from '@angular/router';
-import { ProductCardsComponent } from '../product-card/product-card.component';
+import { SearchEvent } from '../../interfaces/interfaces';
 import { DEMO_DATA } from '../../data/demo.data';
 
 @Component({
@@ -16,80 +17,57 @@ import { DEMO_DATA } from '../../data/demo.data';
   templateUrl: './home.html'
 })
 export class HomeComponent implements OnInit {
-  // Un único objeto para almacenar todo el resultado de la búsqueda
-  searchResult: SearchEvent | null = null;
-  demoResult: SearchEvent | null = null;
-  loading = false;
-  status = '';
-  isLoggedIn = false;
-  selectedCurrency: string = 'ARS';
+  private searchService = inject(SearchService);
+  private auth = inject(AuthService);
 
-  constructor(
-    private searchService: SearchService, 
-    private auth: AuthService, 
-    private ngZone: NgZone,
-    private sharedDataService: SharedDataService
-  ) {}
+  // Señales para manejar el estado
+  searchResult = signal<SearchEvent | null>(null);
+  loading = signal(false);
+  status = signal('');
+  isLoggedIn = this.auth.isLoggedIn;
+  demoResult: SearchEvent | null = null;
 
   ngOnInit() {
-    this.auth.currentUser$.subscribe(user => {
-      this.isLoggedIn = !!user;
-    });
-    this.sharedDataService.currentCurrency.subscribe(currency => {
-      this.selectedCurrency = currency;
-    });
     this.demoResult = DEMO_DATA;
   }
 
-  handleSearch({ query, minPrice, maxPrice, location }: { query: string; minPrice?: number; maxPrice?: number; location: string}) {
-    if (!this.isLoggedIn) {
+  handleSearch(event: { query: string; minPrice?: number; maxPrice?: number; currency: string }) {
+    if (!this.isLoggedIn()) {
       window.location.href = '/login';
       return;
     }
 
-    this.loading = true;
-    this.status = 'Iniciando búsqueda...';
-    // Reiniciamos el objeto de resultado completo
-    this.searchResult = null;
+    this.loading.set(true);
+    this.status.set('Iniciando búsqueda...');
+    this.searchResult.set(null); // Reinicia el resultado
 
-    this.searchService.search(query, minPrice, maxPrice, location, this.selectedCurrency).subscribe({
-      next: (event) => {
-        this.ngZone.run(() => {
-          this.status = event.status;
-          
-          // Si es la primera vez que recibimos un resultado, creamos el objeto base
-          if (event.result && !this.searchResult) {
-            this.searchResult = {
-              id: event.id || '', // <-- Aquí guardamos el ID de la colección
-              query: query,
-              result: event.result,
-              createdAt: event.createdAt,
-              status: event.status
-            };
-          }
-          
-          // Actualizamos el objeto con los datos que van llegando
-          if (this.searchResult) {
-            if (event.result) {
-              this.searchResult.result = event.result;
-            }  
-          }     
-          if (event.status.trim() === 'Completado' || event.status.startsWith('Error')) {
-            this.loading = false;
-          }
-        });
+    this.searchService.search(event.query, event.minPrice, event.maxPrice, event.currency).subscribe({
+      next: (streamEvent) => {
+        this.status.set(streamEvent.status);
+        
+        if (streamEvent.result) {
+          // Actualizamos la señal con el nuevo resultado
+          this.searchResult.update(currentResult => ({
+            ...currentResult,
+            id: streamEvent.id || currentResult?.id || '',
+            query: event.query,
+            result: streamEvent.result,
+            createdAt: streamEvent.createdAt || currentResult?.createdAt || new Date().toISOString(),
+            status: streamEvent.status
+          }));
+        }
+        
+        if (streamEvent.status.trim() === 'Completado' || streamEvent.status.startsWith('Error')) {
+          this.loading.set(false);
+        }
       },
       error: (err) => {
-        this.ngZone.run(() => {
-          console.error('Error en búsqueda:', err);
-          this.status = 'Error al realizar la búsqueda.';
-          this.loading = false;
-        });
+        console.error('Error en búsqueda:', err);
+        this.status.set('Error al realizar la búsqueda.');
+        this.loading.set(false);
       },
       complete: () => {
-        this.ngZone.run(() => {
-          this.loading = false;
-        });
+        this.loading.set(false);
       }
     });
   }

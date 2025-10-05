@@ -1,49 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+// src/app/pages/history/history.ts
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HistoryService } from '../../services/history.service';
-// ✅ Usamos la interfaz que representa un resultado guardado
-import { HistoryEntry } from '../../interfaces/interfaces'; 
+import { HistoryEntry } from '../../interfaces/interfaces';
 import { ResultsComponent } from '../results/results';
-import { RouterLink, RouterModule } from '@angular/router';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-history',
   standalone: true,
   imports: [CommonModule, ResultsComponent],
-  templateUrl: './history.html',
-  styleUrl: './history.scss'
+  templateUrl: './history.html'
 })
 export class HistoryComponent implements OnInit {
-  // Las propiedades ahora usan el tipo correcto
-  history: HistoryEntry[] = [];
-  selectedHistoryItem: HistoryEntry | null = null;
-  loading = true;
-  error: string | null = null;
+  private historyService = inject(HistoryService);
 
-  constructor(private historyService: HistoryService) {}
+  // Usamos Señales para todo el estado del componente
+  history = signal<HistoryEntry[]>([]);
+  selectedHistoryItem = signal<HistoryEntry | null>(null);
+  loading = signal(true);
+  error = signal<string | null>(null);
 
   ngOnInit() {
-    this.historyService.getHistory().subscribe({
-      // ✅ La data que llega del backend es un array de resultados guardados
-      next: (data: HistoryEntry[]) => {
-        this.history = data;
-        
-        // Mostrar el primer resultado del historial por defecto
-        if (this.history.length > 0) {
-          this.selectedHistoryItem = this.history[0];
+    this.historyService.getHistory()
+      .pipe(
+        // Finalize se ejecuta siempre, al completar o al dar error
+        finalize(() => this.loading.set(false))
+      )
+      .subscribe({
+        next: (data: HistoryEntry[]) => {
+          this.history.set(data);
+          // Si hay historial, seleccionamos el primer item por defecto
+          if (data.length > 0) {
+            this.selectedHistoryItem.set(data[0]);
+          }
+        },
+        error: (err) => {
+          console.error('Error al cargar historial:', err);
+          this.error.set("No se pudo cargar el historial. Intenta de nuevo más tarde.");
         }
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error al cargar historial:', err);
-        this.error = "No se pudo cargar el historial. Intenta de nuevo más tarde.";
-        this.loading = false;
-      }
-    });
+      });
   }
 
-  // El parámetro de la función también usa el tipo correcto
-  showHistoryDetails(item: HistoryEntry ): void {
-    this.selectedHistoryItem = item;
+  // El método para seleccionar un item ahora simplemente actualiza la señal
+  showHistoryDetails(item: HistoryEntry): void {
+    this.selectedHistoryItem.set(item);
   }
 }

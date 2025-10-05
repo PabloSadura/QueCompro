@@ -8,7 +8,7 @@ import { MaterialModule } from '../material/material.module';
   standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './product-card.component.html',
-  styleUrls: ['./product-card.component.scss']
+  styleUrls: ['./product-card.component.css']
 })
 export class ProductCardsComponent {
   @Input() shopping_results: SearchEvent | null = null; // 👈 recibe los JSON

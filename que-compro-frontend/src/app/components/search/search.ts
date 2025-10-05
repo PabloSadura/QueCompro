@@ -1,5 +1,6 @@
+// src/app/components/search/search.ts
+import { Component, EventEmitter, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -7,32 +8,36 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './search.html',
-  styleUrls: ['./search.scss']
 })
 export class SearchComponent {
-  query = '';
-  minPrice?: number;
-  maxPrice?: number;
+  // Usamos Señales (signals) para el estado del formulario
+  query = signal('');
+  minPrice = signal<number | undefined>(undefined);
+  maxPrice = signal<number | undefined>(undefined);
+  
+  // Lógica para el dropdown de moneda, ahora dentro de este componente
+  isCurrencyDropdownOpen = signal(false);
+  selectedCurrency = signal('ARS'); // Moneda por defecto
 
-  // ⚡ Estos valores pueden setearse por geolocalización
-  location = 'US';
-  currency = 'USD';
-
-  @Output() search = new EventEmitter<{ 
-    query: string; 
-    minPrice?: number; 
-    maxPrice?: number; 
-    location: string; 
-    currency: string; 
+  @Output() search = new EventEmitter<{
+    query: string;
+    minPrice?: number;
+    maxPrice?: number;
+    currency: string;
   }>();
 
+  selectCurrency(currency: string) {
+    this.selectedCurrency.set(currency);
+    this.isCurrencyDropdownOpen.set(false); // Cierra el dropdown al seleccionar
+  }
+
   onSubmit() {
+    // Emitimos los valores actuales de las señales
     this.search.emit({
-      query: this.query,
-      minPrice: this.minPrice,
-      maxPrice: this.maxPrice,
-      location: this.location,
-      currency: this.currency
+      query: this.query(),
+      minPrice: this.minPrice(),
+      maxPrice: this.maxPrice(),
+      currency: this.selectedCurrency()
     });
   }
 }

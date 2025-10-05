@@ -1,52 +1,58 @@
-<div class="container my-4">
-  <h2 class="mb-4 text-center">Historial de Búsquedas</h2>
+<div class="container mx-auto px-4 py-8">
+  <div class="text-center mb-8">
+    <h2 class="text-3xl font-bold text-slate-800">Historial de Búsquedas</h2>
+    <p class="text-slate-500 mt-2">Revisa y compara los resultados de tus análisis anteriores.</p>
+  </div>
 
-  @if (loading) {
-    <div class="text-center">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
+  @if (loading()) {
+    <div class="text-center py-12">
+      <div class="flex justify-center items-center">
+        <svg class="animate-spin h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
       </div>
-      <p class="mt-2">Cargando tu historial...</p>
+      <p class="mt-4 text-slate-500">Cargando tu historial...</p>
     </div>
   }
 
-  @if (error) {
-    <div class="alert alert-danger">{{ error }}</div>
+  @if (error()) {
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+      <p class="font-bold">Ocurrió un error</p>
+      <p>{{ error() }}</p>
+    </div>
   }
 
-  <!-- Solo mostramos la lista si no está cargando y no hay errores -->
-  @if (!loading && !error) {
-    @if (history.length > 0) {
-      <div class="row d-flex justify-content-center">
-        <!-- Columna para la lista del historial -->
-        <div class="col-md-4">
-  <h5 class="mb-3">Tus búsquedas</h5>
-
-  <!-- Contenedor con scroll -->
-  <div class="list-group history-scroll" data-bs-scroll="true">
-    @for (item of history; track item.id) {
-      <button 
-        type="button" 
-        class="list-group-item list-group-item-action text-start"
-        [class.active]="item.id === selectedHistoryItem?.id"
-        (click)="showHistoryDetails(item)">
+  @if (!loading() && !error()) {
+    @if (history().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
         
-        <div class="d-flex w-100 justify-content-between">
-          <h6 class="mb-1 text-truncate" [title]="item.query">{{ item.query }}</h6>
+        <div class="md:col-span-1 lg:col-span-1 bg-white p-4 rounded-lg border border-slate-200 self-start ">
+          <h5 class="font-semibold text-slate-700 mb-3">Tus búsquedas</h5>
+          <div class="flex flex-col space-y-1 ">
+            @for (item of history(); track item.id) {
+              <button 
+                type="button" 
+                class="w-full text-left p-3 rounded-md transition-colors duration-200"
+                [ngClass]="item.id === selectedHistoryItem()?.id 
+                  ? 'bg-sky-100 text-sky-700 font-semibold' 
+                  : 'text-slate-600 hover:bg-slate-100'"
+                (click)="showHistoryDetails(item)">
+                
+                <p class="truncate font-medium" [title]="item.query">{{ item.query }}</p>
+                </button>
+            }
+          </div>
         </div>
-      </button>
-    }
-  </div>
-</div>
 
-
-        <!-- Columna para mostrar los resultados del item seleccionado -->
-        <div class="col-md-8">
-          <app-results [historyResult]="selectedHistoryItem"></app-results>
+        <div class="md:col-span-2 lg:col-span-3">
+          @if (selectedHistoryItem(); as selectedItem) {
+            <app-results [historyResult]="selectedItem"></app-results>
+          }
         </div>
       </div>
     } @else {
-      <div class="alert alert-info">No tienes historial de búsquedas.</div>
+      <div class="text-center border-2 border-dashed border-slate-300 rounded-lg p-12">
+        <p class="text-slate-500">No tienes historial de búsquedas todavía.</p>
+        <p class="text-slate-400 text-sm mt-2">¡Realiza tu primer análisis para verlo aquí!</p>
+      </div>
     }
   }
 </div>

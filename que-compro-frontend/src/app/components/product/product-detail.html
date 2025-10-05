@@ -1,95 +1,101 @@
-@if (producto(); as p) {
-  <div class="container my-5">
-    <div class="row">
-      <div class="col-12 mb-3">
-        <a routerLink="/history" class="btn btn-outline-secondary">
-          <i class="bi bi-arrow-left me-2"></i>Volver a los resultados
-        </a>
-      </div>
+<div class="container mx-auto px-4 py-8">
+  
+  <div class="mb-6">
+    <a routerLink="/history" class="inline-flex items-center gap-x-2 text-slate-600 hover:text-slate-900 text-sm font-medium">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
+      Volver al historial
+    </a>
+  </div>
+
+  @if (error()) {
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+      <p class="font-bold">Ocurrió un error</p>
+      <p>{{ error() }}</p>
     </div>
-    
-    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
-      <div class="card-body p-lg-5">
-        <div class="row g-5">
-          <div class="col-lg-6">
-            <h1 class="fw-bold mb-2">{{ p.title || 'Sin título' }}</h1>
-            <h3 class="text-muted fw-light mb-4">{{ p.immersive_details?.brand }}</h3>
-            
-            @if (p.thumbnails?.length) {
-              <div [id]="'carousel-detail-' + p.product_id" class="carousel slide rounded shadow-sm mb-4">
-                <div class="carousel-inner rounded">
-                  @for (img of p.thumbnails; track $index) {
-                    <div class="carousel-item" [class.active]="$index===0">
-                      <img [src]="img" class="d-block w-100" [alt]="p.title">
-                    </div>
-                  }
+  }
+
+  @if (producto(); as p) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      
+      <div class="space-y-8">
+        <div>
+          <div class="aspect-square w-full bg-slate-100 rounded-lg overflow-hidden border">
+            <img [src]="p.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="h-full w-full object-cover">
+          </div>
+          <div class="mt-4 grid grid-cols-5 gap-3">
+            @for (img of p.thumbnails; track $index) {
+              <button (click)="currentImageIndex.set($index)" class="aspect-square w-full rounded-md overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                <img [src]="img" [alt]="p.title + ' thumbnail ' + $index" class="h-full w-full object-cover" [ngClass]="currentImageIndex() === $index ? 'opacity-100' : 'opacity-60 hover:opacity-100'">
+              </button>
+            }
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-lg font-semibold text-slate-800 mb-4">Opciones de Compra</h4>
+          <div class="flex flex-col space-y-3">
+            @for (store of p.immersive_details?.stores; track $index) {
+              <a [href]="store.link" target="_blank" class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                <div class="flex items-center gap-x-3">
+                  <img [src]="store.logo" class="h-6 w-6 object-contain">
+                  <span class="font-semibold text-slate-700">{{ store.name }}</span>
                 </div>
-                <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-detail-' + p.product_id" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                </button>
-                <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-detail-' + p.product_id" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                </button>
+                <span class="text-sm font-semibold bg-sky-100 text-sky-800 px-3 py-1 rounded-full">{{ store.price }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div>
+          <p class="text-sm font-medium text-sky-600">{{ p.immersive_details?.brand }}</p>
+          <h1 class="text-3xl lg:text-4xl font-bold text-slate-800 mt-1">{{ p.title || 'Sin título' }}</h1>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-3">
+            <h5 class="flex items-center gap-x-2 font-semibold text-green-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              PROS
+            </h5>
+            <ul class="space-y-2 text-slate-600">
+              @for (pro of p.pros; track $index) {
+                <li class="flex items-start gap-x-2"><span class="text-green-500 mt-1.5">✓</span>{{ pro }}</li>
+              }
+              @if (!p.pros?.length) { <li class="text-slate-400 text-sm">No hay pros.</li> }
+            </ul>
+          </div>
+          <div class="space-y-3">
+            <h5 class="flex items-center gap-x-2 font-semibold text-red-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              CONTRAS
+            </h5>
+            <ul class="space-y-2 text-slate-600">
+              @for (con of p.contras; track $index) {
+                <li class="flex items-start gap-x-2"><span class="text-red-500 mt-1.5">−</span>{{ con }}</li>
+              }
+              @if (!p.contras?.length) { <li class="text-slate-400 text-sm">No hay contras.</li> }
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="text-lg font-semibold text-slate-800 mb-3">Características</h5>
+          <div class="text-sm">
+            @for (feature of p.immersive_details?.about_the_product?.features; track $index) {
+              <div class="flex justify-between py-3 border-b border-slate-200">
+                <strong class="font-medium text-slate-600 mr-4">{{ feature.title }}:</strong>
+                <span class="text-right text-slate-500">{{ feature.value }}</span>
               </div>
             }
-
-            <h4 class="mt-4">Opciones de Compra</h4>
-            <div class="list-group">
-              @for (store of p.immersive_details?.stores; track $index) {
-                <a [href]="store.link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                  <div>
-                    <img [src]="store.logo" class="me-3" style="width: 24px;">
-                    <span class="fw-semibold">{{ store.name }}</span>
-                  </div>
-                  <span class="badge bg-primary rounded-pill fs-6">{{ store.price }}</span>
-                </a>
-              }
-            </div>
-          </div>
-
-          <div class="col-lg-6">
-            <div class="row">
-              <div class="col-md-6">
-                <h5 class="text-success"><i class="bi bi-check-circle-fill me-2"></i>PROS</h5>
-                <ul class="list-unstyled">
-                  @for (pro of p.pros; track $index) {
-                    <li class="py-1"><i class="bi bi-check-lg text-success me-2"></i>{{ pro }}</li>
-                  }
-                  @if (!p.pros?.length) { <li class="text-muted small">No hay pros.</li> }
-                </ul>
-              </div>
-              <div class="col-md-6">
-                <h5 class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>CONTRAS</h5>
-                <ul class="list-unstyled">
-                  @for (con of p.contras; track $index) {
-                    <li class="py-1"><i class="bi bi-dash-circle-fill text-danger me-2"></i>{{ con }}</li>
-                  }
-                   @if (!p.contras?.length) { <li class="text-muted small">No hay contras.</li> }
-                </ul>
-              </div>
-            </div>
-
-            <hr class="my-4">
-
-            <h5><i class="bi bi-info-circle me-2"></i>Características</h5>
-            <ul class="list-group list-group-flush">
-              @for (feature of p.immersive_details?.about_the_product?.features; track $index) {
-                <li class="list-group-item d-flex justify-content-between">
-                  <strong class="me-3">{{ feature.title }}:</strong>
-                  <span class="text-end">{{ feature.value }}</span>
-                </li>
-              }
-            </ul>
           </div>
         </div>
       </div>
     </div>
-  </div>
-} @else {
-  <div class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando producto...</span>
+  } @else if (!error()){
+    <div class="text-center py-12">
+      <p class="text-slate-500">Cargando detalles del producto...</p>
     </div>
-    <p class="mt-3">Cargando producto...</p>
-  </div>
-}
+  }
+</div>

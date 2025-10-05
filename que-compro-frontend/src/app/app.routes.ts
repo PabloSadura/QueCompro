@@ -6,6 +6,8 @@ import { HistoryComponent } from './components/history/history';
 import { AuthGuard } from '@angular/fire/auth-guard';
 import { ProductDetailComponent } from './components/product/product-details';
 import { ResultsComponent } from './components/results/results';
+import { About } from './components/about/about';
+import { Terms } from './components/terms/terms';
 
 export const routes: Routes = [
 { path: '', component: HomeComponent },
@@ -19,5 +21,7 @@ export const routes: Routes = [
     ] 
   },
   { path: 'product/:collectionId/:productId', component: ProductDetailComponent},
+  {path: 'about', component: About},
+  {path:'terms', component: Terms},
   { path: '**', redirectTo: '' },
 ];

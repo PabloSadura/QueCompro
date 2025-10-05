@@ -1,66 +1,55 @@
-import { Component, Input,OnInit } from '@angular/core';
+// src/app/components/results/results.ts
+import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {  RouterModule } from '@angular/router';
-import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces'; // Ajusta la ruta
-import { MaterialModule } from '../material/material.module';
-import {MatDialog} from '@angular/material/dialog';
-import { ProductDetailDialogComponent } from '../product-detail-dialog/product-detail-dialog';
+import { RouterModule } from '@angular/router';
+import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces';
 
 @Component({
   selector: 'app-results',
   standalone: true,
-  imports: [CommonModule, RouterModule, MaterialModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './results.html',
-  styleUrls: ['./results.scss']
 })
 export class ResultsComponent {
   // Propiedades locales que usará el HTML
-  productos: Product[] = [];
-  recomendacionFinal: string = '';
-  collectionId: string = '';
+  productos = signal<Product[]>([]);
+  recomendacionFinal = signal('');
+  collectionId = signal('');
+
+  // Señales para controlar el nuevo modal
+  isModalOpen = signal(false);
+  selectedProductForModal = signal<Product | null>(null);
 
   @Input() loading: boolean = false;
   @Input() status: string = '';
 
-  constructor(public dialog: MatDialog) {}
+  // Usamos un setter para ambos inputs que llama a una función privada
+  @Input() set searchResult(value: SearchEvent | null) {
+    this.processInput(value);
+  }
+  @Input() set historyResult(value: HistoryEntry | null) {
+    this.processInput(value);
+  }
 
-
-  // Usamos un 'setter' para el Input.
-  // Este código se ejecuta automáticamente cada vez que 'searchResult' cambia.
-  @Input()
-  set searchResult(value: SearchEvent | null) {
-    if (value) {
-      console.log(value);
-      
-      // Desestructuramos el objeto entrante en nuestras propiedades locales.
-      this.productos = value.result.productos || [];
-      this.collectionId = value.id || ''; // Guardamos el ID de la colección
-      this.recomendacionFinal = value.result.recomendacion_final || '';
+  private processInput(value: SearchEvent | HistoryEntry | null): void {
+    if (value && value.result) {
+      this.productos.set(value.result.productos || []);
+      this.collectionId.set(value.id || '');
+      this.recomendacionFinal.set(value.result.recomendacion_final || '');
     } else {
-      // Si el valor es nulo (ej. antes de una búsqueda), reseteamos las propiedades.
-      this.productos = [];
-      this.recomendacionFinal = '';
-      this.collectionId = '';
+      this.productos.set([]);
+      this.collectionId.set('');
+      this.recomendacionFinal.set('');
     }
   }
-   @Input()
-  set historyResult(value: HistoryEntry | null) {
-    if (value) {
-      // Desestructuramos el objeto entrante en nuestras propiedades locales.
-      this.productos = value.result.productos || [];
-      this.collectionId = value.id || ''; // Guardamos el ID de la colección
-      this.recomendacionFinal = value.result.recomendacion_final || '';
-    } else {
-      // Si el valor es nulo (ej. antes de una búsqueda), reseteamos las propiedades.
-      this.productos = [];
-      this.recomendacionFinal = '';
-      this.collectionId = '';
-    }
+
+  // Métodos para el nuevo modal
+  openProsConsModal(product: Product): void {
+    this.selectedProductForModal.set(product);
+    this.isModalOpen.set(true);
   }
-  openModal(product: any, type: string): void {
-  this.dialog.open(ProductDetailDialogComponent, {
-    width: '400px',
-    data: { product: product, type: type }, // Pasar los datos al diálogo
-  });
-}
+
+  closeModal(): void {
+    this.isModalOpen.set(false);
+  }
 }

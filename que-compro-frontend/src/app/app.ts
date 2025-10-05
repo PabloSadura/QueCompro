@@ -1,13 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Navbar } from './components/navbar/navbar';
+import { NavbarComponent } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Footer],
+  imports: [RouterOutlet, NavbarComponent, Footer],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.css',
+   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class App {
   protected readonly title = signal('que-compro-frontend');

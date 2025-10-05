@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [FormsModule,CommonModule],
   templateUrl: './signup.html',
+  styleUrl: './signup.css',
 })
 export class SignupComponent {
   email = '';
@@ -31,4 +32,16 @@ export class SignupComponent {
       this.loading = false;
     }
   }
+  async onGoogleLogin() {
+  this.loading = true;
+  this.error = null;
+  try {
+    await this.auth.loginWithGoogle();
+    this.router.navigate(['/']);
+  } catch (err: any) {
+    this.error = err.message || 'Error al iniciar sesión con Google';
+  } finally {
+    this.loading = false;
+  }
+}
 }

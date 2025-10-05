@@ -15,7 +15,7 @@
   </div>
 
   <!-- Password -->
-  <div class="mb-3">
+  <div class="mb-1">
     <label for="password" class="form-label">Contraseña</label>
     <input
       type="password"
@@ -26,6 +26,14 @@
       required
     />
   </div>
+
+    <button
+    class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center mb-3"
+    (click)="onGoogleLogin()"
+  >
+    <i class="bi bi-google me-2"></i>
+    Registrate con Google
+  </button>
 
   <!-- Signup button -->
   <button
