@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
           }));
         }
         
-        if (streamEvent.status.trim() === 'Completado' || streamEvent.status.startsWith('Error')) {
+        if (streamEvent.status === 'Completado' || streamEvent.status.startsWith('Error')) {
           this.loading.set(false);
         }
       },

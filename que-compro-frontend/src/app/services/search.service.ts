@@ -42,7 +42,7 @@ export class SearchService {
               observer.next(data);
               
               // ✅ si llega un evento de "Completado", cerramos el stream
-              if (data.status.trim() === 'Completado') {
+              if (data.status === 'Completado') {
                 eventSource.close();
                 observer.complete();
               }

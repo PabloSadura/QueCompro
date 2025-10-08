@@ -10,6 +10,7 @@ import { SharedDataService } from '../../services/shared-data.service';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './navbar.html',
+  styleUrl: './navbar.css'
 })
 export class NavbarComponent {
   private authService = inject(AuthService);

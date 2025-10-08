@@ -1,27 +1,47 @@
 import admin from "../config/firebase.js";
- // tu config de firebase
 
+/**
+ * Obtiene el historial de búsquedas de un usuario, incluyendo los productos
+ * de la subcolección correspondiente a cada búsqueda.
+ */
 async function getUserHistory(req, res) {
   try {    
     const userId = req.user?.uid;
-    if (!userId) return res.status(401).json({ error: "No autorizado" });
+    if (!userId) {
+      return res.status(401).json({ error: "No autorizado" });
+    }
     
-    const snapshot = await admin.firestore().collection("searches")
+    // 1. Obtener los documentos principales de las búsquedas del usuario.
+    const searchesSnapshot = await admin.firestore().collection(process.env.FIRESTORE_COLLECTION)
         .where("userId", "==", userId)
         .orderBy("createdAt", "desc")
         .get();
-     const info = snapshot.docs.map(doc => {
-        const data = doc.data(        );
-        return  {
-          id: doc.id,
-          query: data.query || "",
-          createdAt: data.createdAt || "",
-          result: {
-            productos: data.result.productos || [],
-            recomendacion_final: data.result.recomendacion_final || "No hay recomendación disponible"
-        }}
-      });
-    res.json(info);
+
+    // 2. Para cada búsqueda, crear una promesa que también obtenga los productos de su subcolección.
+    const historyPromises = searchesSnapshot.docs.map(async (doc) => {
+      const searchData = doc.data();
+      
+      // 3. Obtener los documentos de la subcolección 'productos'.
+      const productsSnapshot = await doc.ref.collection(process.env.FIRESTORE_PRODUCTS_COLLECTION).get();
+      const productos = productsSnapshot.docs.map(productDoc => productDoc.data());
+
+      // 4. Construir el objeto de historial completo que el frontend espera.
+      return {
+        id: doc.id,
+        query: searchData.query || "",
+        createdAt: searchData.createdAt.toDate(), // Convertir Timestamp a Date
+        result: {
+          productos: productos || [],
+          recomendacion_final: searchData.recomendacion_final || "No hay recomendación disponible",
+          total_results: searchData.total_results || 0
+        }
+      };
+    });
+
+    // 5. Esperar a que todas las búsquedas y sus subcolecciones se resuelvan.
+    const userHistory = await Promise.all(historyPromises);
+    
+    res.json(userHistory);
 
   } catch (err) {
     console.error("Error obteniendo historial:", err);
@@ -29,4 +49,4 @@ async function getUserHistory(req, res) {
   }
 }
 
-export default getUserHistory
+export default getUserHistory;

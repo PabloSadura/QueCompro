@@ -2,6 +2,7 @@
 export interface GeminiResults {
   productos: Product[];
   recomendacion_final: string;
+  total_results: number
 }
 
 export interface SearchEvent {
@@ -10,6 +11,7 @@ export interface SearchEvent {
   result: GeminiResults;  // ✅ un objeto, no un array
   createdAt: string;
   status: string
+  
 }
 
 export interface HistoryEntry {
@@ -56,15 +58,15 @@ export interface Product {
   extension?: string[]
   buy_options?: BuyOption[]
   image?: string
-  extensions: any
-  vendor: any
+  extensions?: any
+  vendor?: any
   cons?: string[]
   marca?: string
   modelo?: string
   rate?: string
   descripcion?: string
   caracteristicas?: string[]
-  pricio: any
+  pricio?: any
   motivo_seleccion?: string
   precio?: number
 }
@@ -89,6 +91,7 @@ export interface ImmersiveDetails {
   discussions_and_forums?: DiscussionsAndForum[]
   videos?: Video[]
   more_options?: MoreOption[]
+  
 }
 
 export interface Store {
@@ -105,6 +108,7 @@ export interface Store {
   total: string
   extracted_total: number
   shipping_extracted?: number
+  tag?: string
 }
 
 export interface AboutTheProduct {
@@ -113,6 +117,7 @@ export interface AboutTheProduct {
   link?: string
   displayed_link?: string
   icon?: string
+  description?: string
 }
 
 export interface Feature {
@@ -156,7 +161,7 @@ export interface Video {
   title: string
   link: string
   source: string
-  channel: string
+  channel?: string
   duration: string
   thumbnail: string
   preview?: string

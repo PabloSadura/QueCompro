@@ -13,13 +13,9 @@ export class ProductService {
   private http = inject(HttpClient);
   private auth = inject(AuthService); // Inyectamos el servicio de autenticación
 
-  // URL base de tu API en el backend
   private apiUrl = 'http://localhost:5000/api'; // Reemplaza con la URL de tu backend
 
-  /**
-   * Obtiene un producto por su ID, incluyendo el token de autenticación en la llamada.
-   */
-  getProductById(idCollection: string, idProduct:string): Observable<Product> {
+  getProductById(idCollection: string, idProduct:string): Observable<Product> {    
     return from(this.auth.getIdToken())
     .pipe(
       switchMap(token => {

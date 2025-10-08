@@ -37,4 +37,19 @@ export class ProductDetailComponent {
   
   // ✅ Señal para controlar la imagen activa en la galería
   currentImageIndex = signal(0);
+  
+   nextImage(thumbnails: string[] | undefined) {
+    if (!thumbnails) return;
+    this.currentImageIndex.update(index => 
+      (index + 1) % thumbnails.length
+    );
+  }
+
+  // ✅ NUEVO: Método para ir a la imagen anterior en el carrusel
+  prevImage(thumbnails: string[] | undefined) {
+    if (!thumbnails) return;
+    this.currentImageIndex.update(index => 
+      (index - 1 + thumbnails.length) % thumbnails.length
+    );
+  }
 }

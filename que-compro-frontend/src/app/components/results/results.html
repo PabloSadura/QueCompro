@@ -9,7 +9,7 @@
       </div>
       <p class="mt-2 text-slate-700">{{ recomendacionFinal() }}</p>
     </div>
-    
+      
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       @for (p of productos(); track p.product_id) {
         <div class="flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-slate-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
@@ -24,18 +24,18 @@
             </div>
           </div>
           
-          <div class="p-4 flex flex-col flex-grow">
-            <h3 class="text-base font-semibold text-slate-800 flex-grow mb-2 line-clamp-2">{{ p.immersive_details?.title || p.title }}</h3>
-            <div class="my-3 flex justify-between items-baseline">
-              <p class="text-2xl font-bold text-slate-900">{{ p.price }}</p>
-              <span class="text-sm text-slate-500">({{ p.reviews || 'Sin' }} reviews)</span>
+          <div class="p-4 flex flex-col">
+            <p class="fs-semibold text-slate-800">{{ p.immersive_details?.title || p.title }}</p>
+            <div   class="my-1 flex flex-col justify-between items-baseline ">
+              <p class="text-2xl text-slate-900">{{ p.price }}</p>
+              <p class="text-sm text-slate-500">({{ p.reviews || 'Sin' }} reviews)</p>
             </div>
             
             <div class="mt-auto grid grid-cols-2 gap-x-3 pt-4 border-t border-slate-200">
-              <button (click)="openProsConsModal(p)" class="w-full inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md text-slate-700 bg-slate-100 hover:bg-slate-200">
+              <button (click)="openProsConsModal(p)" class="inline-flex items-center rounded-full bg-gray-50 px-3 py-2 font-medium text-gray-600 inset-ring inset-ring-gray-500/10 hover:bg-slate-100 transition-colors">
                 Pros y Contras
               </button>
-              <a [routerLink]="['/product', collectionId(), p.product_id]" class="w-full inline-flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md text-white bg-slate-800 hover:bg-black">
+              <a [routerLink]="['/product', collectionId(), p.product_id]" class="w-full inline-flex items-center justify-center px-3 py-1 text-sm font-medium rounded-full text-white bg-slate-600 hover:bg-black">
                 Ver Detalles
               </a>
             </div>
