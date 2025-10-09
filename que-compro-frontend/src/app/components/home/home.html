@@ -2,46 +2,26 @@
   <app-search (search)="handleSearch($event)"></app-search>
 
   <div class="mt-12">
-    <!-- Mostrar estado de carga y spinner -->
-    @if (status() && status() !== 'Completado') {
-      <div class="text-center mb-4 text-slate-500">
-        <p>{{ status() }}</p>
-        @if (loading()) {
-          <div class="flex justify-center items-center mt-2">
-            <svg class="animate-spin h-5 w-5 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- Mostrar esqueleto de carga -->
+    <!-- Indicador de carga y estado -->
     @if (loading()) {
-      <div class="animate-pulse">
-        <div class="bg-slate-200 h-8 w-3/4 mx-auto rounded-md mb-8"></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          @for (_ of [1, 2, 3]; track $index) {
-            <div class="border border-slate-200 rounded-lg p-4">
-              <div class="bg-slate-200 h-40 rounded-md mb-4"></div>
-              <div class="bg-slate-200 h-6 w-3/4 rounded-md mb-2"></div>
-              <div class="bg-slate-200 h-4 w-1/2 rounded-md"></div>
-            </div>
-          }
+      <div class="text-center">
+        <div class="flex justify-center items-center">
+          <svg class="animate-spin h-5 w-5 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         </div>
+        <p class="mt-2 text-slate-500">{{ status() }}</p>
       </div>
-    }
-
-    <!-- Mostrar resultados reales -->
-    @if (searchResult(); as result) {
-      <app-results 
-        [searchResult]="result"
-        [loading]="loading()" 
-        [status]="status()">
-      </app-results>
-    } @else if (!loading()) {
-      <!-- Mostrar datos de demostración si no hay búsqueda y no se está cargando -->
-      <div class="pt-8">
-        <h3 class="text-center text-lg font-semibold text-slate-700 mb-4">O mira nuestros datos de demostración:</h3>
-        <app-results [historyResult]="demoResult" [loading]="false" [status]="''"></app-results>
+    } @else {
+      <!-- Contenido principal: Resultados o Demo -->
+      <div class="text-center">
+        @if(searchResult(); as result) {
+          <h2 class="text-2xl font-bold text-slate-800 mb-4">{{ result.result?.recomendacion_final }}</h2>
+          <app-product-cards [products]="result.result?.productos || []" [collectionId]="result.id || ''"></app-product-cards>
+        } @else if(demoResult) {
+           <div class="pt-8">
+             <h3 class="text-center text-lg font-semibold text-slate-700 mb-4">O mira nuestros datos de demostración:</h3>
+             <app-product-cards [products]="demoResult.result?.productos || []" [collectionId]="demoResult.id || ''"></app-product-cards>
+           </div>
+        }
       </div>
     }
   </div>
