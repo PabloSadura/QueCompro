@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 export async function fetchImmersiveProductDetails(apiUrl) {
     
@@ -12,13 +12,12 @@ export async function fetchImmersiveProductDetails(apiUrl) {
     }
 
     try {
-        const response = await fetch(finalUrl);
-        if (!response.ok) {
+        const response = await axios.get(finalUrl);
+        if (response.status !== 200) {
             console.warn(`SerpApi Immersive Fetch Warning: HTTP status: ${response.status}`);
             return null;
         }
-        const data = await response.json();
-        return data.product_results || null;
+        return response.data.product_results || null;
     } catch (error) {
         console.error("❌ Error fetching Immersive Product API:", error);
         return null;

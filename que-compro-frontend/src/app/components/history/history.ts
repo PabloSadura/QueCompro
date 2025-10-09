@@ -1,5 +1,5 @@
 // src/app/pages/history/history.ts
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HistoryService } from '../../services/history.service';
@@ -11,7 +11,8 @@ import { finalize } from 'rxjs';
   selector: 'app-history',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './history.html'
+  templateUrl: './history.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HistoryComponent implements OnInit {
   private historyService = inject(HistoryService);

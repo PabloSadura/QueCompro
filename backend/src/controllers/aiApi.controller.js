@@ -1,6 +1,6 @@
 // src/services/geoip-service/ipApiService.js
 
-import fetch from 'node-fetch'; 
+import axios from 'axios'; 
 
 /**
  * Obtiene la geolocalización de una dirección IP usando ip-api.com
@@ -14,8 +14,8 @@ export async function getGeoLocation(ip) {
     }
 
     try {
-        const response = await fetch(`http://ip-api.com/json/${ip}`);
-        const data = await response.json();
+        const response = await axios.get(`http://ip-api.com/json/${ip}`);
+        const data = response.data;
         
         if (data.status === 'fail') {
             console.error('❌ Error en la API de ip-api.com:', data.message);

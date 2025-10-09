@@ -1,5 +1,5 @@
 // src/app/components/results/results.ts
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces';
@@ -9,6 +9,7 @@ import { SearchEvent, Product, HistoryEntry } from '../../interfaces/interfaces'
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './results.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResultsComponent {
   // Propiedades locales que usará el HTML

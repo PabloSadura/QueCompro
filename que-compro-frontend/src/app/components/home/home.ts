@@ -1,5 +1,5 @@
 // src/app/pages/home/home.ts
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -14,7 +14,8 @@ import { DEMO_DATA } from '../../data/demo.data';
   selector: 'app-home',
   standalone: true,
   imports: [CommonModule, RouterModule, SearchComponent, ProductCardsComponent],
-  templateUrl: './home.html'
+  templateUrl: './home.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
   private searchService = inject(SearchService);

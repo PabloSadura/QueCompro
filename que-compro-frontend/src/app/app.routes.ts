@@ -1,27 +1,44 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './components/home/home';
-import { LoginComponent } from './auth/login/login';
-import { SignupComponent } from './auth/signup/signup';
-import { HistoryComponent } from './components/history/history';
 import { AuthGuard } from '@angular/fire/auth-guard';
-import { ProductDetailComponent } from './components/product/product-details';
-import { ResultsComponent } from './components/results/results';
-import { About } from './components/about/about';
-import { Terms } from './components/terms/terms';
 
 export const routes: Routes = [
-{ path: '', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignupComponent },
-  { path: 'history', component: HistoryComponent, canActivate: [AuthGuard], 
-    children:[
-        {
-            path:':id', component: ResultsComponent
-        }
-    ] 
+  {
+    path: '',
+    loadComponent: () => import('./components/home/home').then(m => m.HomeComponent)
   },
-  { path: 'product/:collectionId/:productId', component: ProductDetailComponent},
-  {path: 'about', component: About},
-  {path:'terms', component: Terms},
-  { path: '**', redirectTo: '' },
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login').then(m => m.LoginComponent)
+  },
+  {
+    path: 'signup',
+    loadComponent: () => import('./auth/signup/signup').then(m => m.SignupComponent)
+  },
+  {
+    path: 'history',
+    loadComponent: () => import('./components/history/history').then(m => m.HistoryComponent),
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: ':id',
+        loadComponent: () => import('./components/results/results').then(m => m.ResultsComponent)
+      }
+    ]
+  },
+  {
+    path: 'product/:collectionId/:productId',
+    loadComponent: () => import('./components/product/product-details').then(m => m.ProductDetailComponent)
+  },
+  {
+    path: 'about',
+    loadComponent: () => import('./components/about/about').then(m => m.About)
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./components/terms/terms').then(m => m.Terms)
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  },
 ];
