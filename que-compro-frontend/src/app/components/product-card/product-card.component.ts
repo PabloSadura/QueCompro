@@ -2,9 +2,8 @@ import { Component, Input, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SearchEvent, Product } from '../../interfaces/interfaces';
-import { ProductService } from '../../services/product.service'; // Asegúrate de importar tu servicio
+import { ProductService } from '../../services/product.service';
 
-// Definimos un tipo para que el código sea más seguro
 type ModalSection = 'features' | 'pros' | 'cons';
 
 @Component({
@@ -14,61 +13,53 @@ type ModalSection = 'features' | 'pros' | 'cons';
   templateUrl: './product-card.component.html',
 })
 export class ProductCardsComponent {
-  // Inyectamos el servicio para usarlo
   private productService = inject(ProductService);
 
-  @Input() shopping_results: SearchEvent | null = null;
+  // --- ✅ INPUTS MÁS EXPLÍCITOS Y ROBUSTOS ---
+  @Input() products: Product[] | undefined | null = [];
+  @Input() collectionId: string | undefined | null = '';
+  @Input() recommendation: string | undefined | null = '';
+  
   @Input() loading: boolean = false;
   @Input() status: string = '';
 
-  // Señales para el Modal
+  // El resto de la lógica del modal se mantiene igual
   isModalOpen = signal(false);
   selectedProductForModal = signal<Product | null>(null);
-  isModalLoading = signal(false); // Para el spinner DENTRO del modal
-
-  // Señales para la UI del Modal
+  isModalLoading = signal(false);
   currentImageIndex = signal(0);
   openSection = signal<ModalSection | null>('features');
 
-  // --- ESTE ES EL MÉTODO CLAVE ---
   openQuickViewModal(product: Product): void {
-    // 1. Abrimos el modal inmediatamente
     this.isModalOpen.set(true);
-    // 2. Activamos el spinner de carga
     this.isModalLoading.set(true);
-    // 3. Mostramos la información básica del producto que ya tenemos
     this.selectedProductForModal.set(product);
-    // 4. Reseteamos la UI del modal a su estado inicial
     this.currentImageIndex.set(0);
     this.openSection.set('features');
-    console.log(this.shopping_results?.id);
     
-
-    const collectionId = this.shopping_results?.id;
+    // ✅ CORRECCIÓN: Ahora usamos el Input 'collectionId' directamente.
+    // Es mucho más seguro y ya no puede ser nulo si se pasa correctamente.
+    const collectionId = this.collectionId;
+    
     if (!collectionId) {
-      console.error("Error: No se encontró el ID de la colección para buscar los detalles.");
+      console.error("Error: No se proporcionó un ID de colección al componente.");
       this.isModalLoading.set(false);
       return;
     }
 
-    // 5. Llamamos al servicio para obtener los detalles completos (el backend hace el resto)
-    this.productService.getProductById(collectionId, product.product_id?.toString() || '').subscribe({
+    this.productService.getProductById(collectionId, product.product_id?.toString()|| '').subscribe({
       next: (fullProduct) => {
-        // 6. Cuando llegan los datos, actualizamos el modal con la información completa
         this.selectedProductForModal.set(fullProduct);
-        // 7. Ocultamos el spinner
         this.isModalLoading.set(false);
       },
       error: (err) => {
         console.error("Error al buscar los detalles del producto:", err);
-        // 8. Ocultamos el spinner incluso si hay un error
         this.isModalLoading.set(false);
-        // (Opcional) Podrías añadir una señal de error para mostrar un mensaje en el modal
       }
     });
   }
 
-  closeModal(): void {
+closeModal(): void {
     this.isModalOpen.set(false);
   }
 

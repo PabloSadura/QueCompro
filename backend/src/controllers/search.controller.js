@@ -41,7 +41,7 @@ export default async function handleSearchStream(req, res) {
         }
 
         // 2. Analizar con Gemini para obtener la mejor recomendación
-        sendEvent({ status: `Analizando ${totalResults} resultados con Gemini...`});
+        sendEvent({ status: `Analizando ${totalResults} resultados con Gemini u OpenAI...`});
         const geminiAnalysis  = await getBestRecommendationFromGemini(userQuery, shoppingResults);
         
         if (!geminiAnalysis || !geminiAnalysis.productos_analisis) {
@@ -62,16 +62,12 @@ export default async function handleSearchStream(req, res) {
         sendEvent({ status: "Guardando búsqueda y recomendación..." });
        
          // 4. Primero, guardamos en Firebase y esperamos a que nos devuelva el ID de la búsqueda.
-        const searchId = await saveSearchToFirebase(userQuery, userId, finalRecommendation);
+           const { id: searchId, createdAt } = await saveSearchToFirebase(userQuery, userId, finalRecommendation);
 
-        // 5. Luego, creamos un nuevo objeto de resultado que SÍ incluye el ID.
-        const resultToSend = {
-            ...finalRecommendation,
-            id: searchId // Este es el 'collectionId' que el frontend necesita.
-        };
 
-        // 6. Finalmente, enviamos el evento 'Completado' con el objeto que contiene el ID.
-        sendEvent({ status: "Completado", result: resultToSend });
+
+        // . Finalmente, enviamos el evento 'Completado' con el objeto que contiene el ID.
+        sendEvent({ status: "Completado", result: finalRecommendation, id: searchId, createdAt: createdAt });
 
         
     } catch (err) {

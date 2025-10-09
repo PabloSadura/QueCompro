@@ -44,17 +44,11 @@ export class HomeComponent implements OnInit {
     this.searchService.search(event.query, event.minPrice, event.maxPrice, event.currency).subscribe({
       next: (streamEvent) => {
         this.status.set(streamEvent.status);
+       console.log(streamEvent);
+       
         
-        if (streamEvent.result) {
-          // Actualizamos la señal con el nuevo resultado
-          this.searchResult.update(currentResult => ({
-            ...currentResult,
-            id: streamEvent.id || currentResult?.id || '',
-            query: event.query,
-            result: streamEvent.result,
-            createdAt: streamEvent.createdAt || currentResult?.createdAt || new Date().toISOString(),
-            status: streamEvent.status
-          }));
+          if (streamEvent.result) {
+          this.searchResult.set(streamEvent);
         }
         
         if (streamEvent.status === 'Completado' || streamEvent.status.startsWith('Error')) {

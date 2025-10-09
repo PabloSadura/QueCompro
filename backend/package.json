@@ -23,7 +23,7 @@
     "google-search-results-nodejs": "^2.1.0",
     "jsonc-parser": "^3.3.1",
     "node-fetch": "^3.3.2",
-    "openai": "^5.21.0",
+    "openai": "^5.23.2",
     "redis": "^5.8.2",
     "serpapi": "^2.2.1",
     "string-similarity": "^4.0.4"

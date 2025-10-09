@@ -2,7 +2,7 @@
   <app-search (search)="handleSearch($event)"></app-search>
 
   <div class="mt-12">
-    @if (status()) {
+    @if (status()!=="Completado") {
       <div class="text-center mb-4 text-slate-500">
         <p>{{ status() }}</p>
         @if (loading()) {
@@ -12,13 +12,27 @@
         }
       </div>
     }
-
-    @if (searchResult(); as result) {
-      <app-product-cards [shopping_results]="result" [loading]="loading()" [status]="status()"></app-product-cards>
+    
+   @if (searchResult(); as result) {
+      <!-- ✅ CORRECCIÓN: Pasamos los datos de forma explícita -->
+      <app-product-cards 
+        [products]="result.result.productos"
+        [collectionId]="result.id"
+        [recommendation]="result.result.recomendacion_final"
+        [loading]="loading()" 
+        [status]="status()">
+      </app-product-cards>
     } @else if (loading()===false) {
       <div class="pt-8">
         <h3 class="text-center text-lg font-semibold text-slate-700 mb-4">O mira nuestros datos de demostración:</h3>
-        <app-product-cards [shopping_results]="demoResult" [loading]="false" [status]="''"></app-product-cards>
+        <!-- ✅ CORRECCIÓN: Aplicamos la misma lógica a los datos de demostración -->
+        <app-product-cards 
+          [products]="demoResult?.result?.productos"
+          [collectionId]="demoResult?.id"
+          [recommendation]="demoResult?.result?.recomendacion_final"
+          [loading]="false" 
+          [status]="''">
+        </app-product-cards>
       </div>
     }
   </div>

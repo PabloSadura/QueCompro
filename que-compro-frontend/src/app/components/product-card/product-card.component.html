@@ -5,22 +5,23 @@
   </div>
 }
 
-@if (shopping_results?.result?.productos?.length && !loading) {
+<!-- ✅ CORRECCIÓN: Ahora se comprueba el array 'products' directamente -->
+@if (products?.length && !loading) {
   <div class="space-y-6">
     <!-- Tarjeta de Recomendación IA -->
     <div class="bg-sky-50 border border-sky-200 rounded-lg p-6 text-center shadow-sm">
       <div class="flex justify-center items-center gap-x-3">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-sky-500">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.5 21.75l-.398-1.188a3.375 3.375 0 00-2.455-2.456L12.75 18l1.188-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.188a3.375 3.375 0 002.456 2.456L20.25 18l-1.188.398a3.375 3.375 0 00-2.456 2.456z" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-sky-500"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.562L16.5 21.75l-.398-1.188a3.375 3.375 0 00-2.455-2.456L12.75 18l1.188-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.188a3.375 3.375 0 002.456 2.456L20.25 18l-1.188.398a3.375 3.375 0 00-2.456 2.456z" /></svg>
         <h2 class="text-2xl font-bold text-sky-800">Análisis IA</h2>
       </div>
-      <p class="mt-2 text-slate-700">{{ shopping_results?.result?.recomendacion_final }}</p>
+      <!-- ✅ CORRECCIÓN: Se usa el Input 'recommendation' -->
+      <p class="mt-2 text-slate-700">{{ recommendation }}</p>
     </div>
       
     <!-- Grid de Tarjetas Simplificadas -->
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
-      @for (p of shopping_results?.result?.productos; track p.product_id) {
+      <!-- ✅ CORRECCIÓN: El bucle ahora itera sobre 'products' -->
+      @for (p of products; track p.product_id) {
         @if (p) {
           <div class="group relative text-left">
             <div class="aspect-square w-full overflow-hidden rounded-lg bg-slate-100">
@@ -30,7 +31,7 @@
               <h3 class="text-sm font-medium text-slate-800 line-clamp-2">{{ p.title }}</h3>
               <p class="mt-1 text-base font-bold text-slate-900">{{ p.price }}</p>
             </div>
-            <button (click)="openQuickViewModal(p)" class="absolute inset-0" aria-label="Vista rápida para {{p.title}}"></button>
+            <button (click)="openQuickViewModal(p)" class="absolute inset-0 cursor-pointer" aria-label="Vista rápida para {{p.title}}"></button>
           </div>
         }
       }

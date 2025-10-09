@@ -24,7 +24,7 @@ export async function saveSearchToFirebase(userQuery, userId, finalRecommendatio
     });
     await batch.commit();
     
-    return searchDocRef.id;
+    return {id:searchDocRef.id, createdAt: searchData.createdAt };
 
   } catch (error) {
     console.error("Error al guardar la búsqueda en Firebase:", error);
