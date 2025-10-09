@@ -15,20 +15,17 @@
   }
 
   @if (producto(); as p) {
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      
-      <div class="space-y-8">
-        
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12"> 
+      <div class="space-y-8">      
         <div>
-          <div class="lg:hidden relative w-full aspect-square rounded-lg overflow-hidden border bg-slate-100">
+          <div class="lg:hidden relative w-full aspect-square rounded-lg overflow-hidden border">
             <div class="flex h-full transition-transform duration-300 ease-in-out" [style.transform]="'translateX(-' + currentImageIndex() * 100 + '%)'">
-              @for (img of p.thumbnails; track $index) {
-                <div class="h-full w-full flex-shrink-0">
-                  <img [src]="img" [alt]="p.title" class="h-full w-full object-cover">
+              @for (img of p.immersive_details?.thumbnails || [p.thumbnail]; track $index) {
+                <div class="h-full w-full flex-shrink-0 flex justify-center items-center">
+                  <img [src]="img" [alt]="p.title" class="self-center">
                 </div>
               }
             </div>
-            
             <button (click)="prevImage(p.thumbnails)" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
             </button>
@@ -37,12 +34,11 @@
             </button>
 
             <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-x-2">
-              @for (img of p.thumbnails; track $index) {
+              @for (img of p.immersive_details?.thumbnails || [p.thumbnail]; track $index) {
                 <button (click)="currentImageIndex.set($index)" class="h-2 w-2 rounded-full transition-colors" [ngClass]="currentImageIndex() === $index ? 'bg-slate-800' : 'bg-slate-400 hover:bg-slate-600'"></button>
               }
             </div>
           </div>
-
           <div class="hidden lg:grid grid-cols-6 gap-4">
             <div class="col-span-1 flex flex-col gap-3">
               @for (img of p.thumbnails; track $index) {
@@ -51,12 +47,11 @@
                 </button>
               }
             </div>
-            <div class="w-full aspect-square bg-slate-100 rounded-lg overflow-hidden border col-span-5">
-              <img [src]="p.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="h-full w-full object-cover">
+            <div class="w-full aspect-square rounded-lg overflow-hidden border col-span-5 flex-shrink-0 flex justify-center items-center">
+              <img [src]="p.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="self-center">
             </div>
           </div>
         </div>
-
         <div>
           <h4 class="text-lg font-semibold text-slate-800 mb-4">Opciones de Compra</h4>
           <div class="flex flex-col space-y-3">

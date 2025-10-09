@@ -22,8 +22,8 @@
     <div class="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
       @for (p of shopping_results?.result?.productos; track p.product_id) {
         @if (p) {
-          <div class="block bg-white rounded-lg shadow-md overflow-hidden border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all no-underline cursor-pointer relative">
-            <div class="aspect-square w-full overflow-hidden rounded-lg">
+          <div class="group relative text-left">
+            <div class="aspect-square w-full overflow-hidden rounded-lg bg-slate-100">
               <img [src]="p.thumbnail" [alt]="p.title" class="h-full w-full object-cover object-center">
             </div>
             <div class="pt-3 text-center">
@@ -41,57 +41,59 @@
 <!-- ########## MODAL DE VISTA RÁPIDA CON DETALLES COMPLETOS ########## -->
 @if (isModalOpen()) {
   <div (click)="closeModal()" class="fixed inset-0 z-50 bg-black/60"></div>
-
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div (click)="$event.stopPropagation()" class="relative flex flex-col w-full max-w-4xl bg-white shadow-2xl rounded-lg overflow-hidden max-h-[90vh]"> 
-      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 z-10">
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 z-20">
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
       </button>
-     <div class="flex-1 overflow-y-auto p-6 sm:p-8"> 
+
+      @if(isModalLoading()){
+        <div class="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10">
+           <svg class="animate-spin h-8 w-8 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        </div>
+      }
+
+      <div class="flex-1 overflow-y-auto p-6 sm:p-8">
         @if (selectedProductForModal(); as p) {
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             
-        <div class="space-y-8">
-        
-        <div>
-          <div class="lg:hidden relative w-full aspect-square rounded-lg overflow-hidden border bg-slate-100">
-            <div class="flex h-full transition-transform duration-300 ease-in-out" [style.transform]="'translateX(-' + currentImageIndex() * 100 + '%)'">
-              @for (img of p.thumbnails; track $index) {
-                <div class="h-full w-full flex-shrink-0">
-                  <img [src]="img" [alt]="p.title" class="h-full w-full object-cover">
+            <!-- Columna de Imágenes (con galería responsiva) -->
+            <div class="space-y-6">
+              <!-- Galería para Móviles -->
+              <div class="lg:hidden relative w-full aspect-square rounded-lg overflow-hidden border bg-slate-100">
+                <div class="flex h-full transition-transform duration-300 ease-in-out" [style.transform]="'translateX(-' + currentImageIndex() * 100 + '%)'">
+                  @for (img of p.immersive_details?.thumbnails || [p.thumbnail]; track $index) {
+                    <div class="h-full w-full flex-shrink-0">
+                      <img [src]="img" [alt]="p.title" class="h-full w-full object-cover">
+                    </div>
+                  }
                 </div>
-              }
-            </div>
-            
-            <button (click)="prevImage(p.thumbnails)" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-            </button>
-            <button (click)="nextImage(p.thumbnails)" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-            </button>
-
-            <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-x-2">
-              @for (img of p.thumbnails; track $index) {
-                <button (click)="currentImageIndex.set($index)" class="h-2 w-2 rounded-full transition-colors" [ngClass]="currentImageIndex() === $index ? 'bg-slate-800' : 'bg-slate-400 hover:bg-slate-600'"></button>
-              }
-            </div>
-          </div>
-
-          <div class="hidden lg:grid grid-cols-6 gap-4">
-            <div class="col-span-1 flex flex-col gap-3">
-              @for (img of p.thumbnails; track $index) {
-                <button (click)="currentImageIndex.set($index)" class="aspect-square w-full rounded-md overflow-hidden focus:outline-none">
-                  <img [src]="img" [alt]="p.title + ' thumbnail ' + $index" class="h-full w-full object-cover transition-opacity" [ngClass]="currentImageIndex() === $index ? 'opacity-100 ring-2 ring-sky-500' : 'opacity-60 hover:opacity-100'">
+                <button (click)="prevImage(p.immersive_details?.thumbnails)" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                 </button>
-              }
-            </div>
-            <div class="w-full aspect-square bg-slate-100 rounded-lg overflow-hidden border col-span-5">
-              <img [src]="p.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="h-full w-full object-cover">
-            </div>
-          </div>
-        </div>
-
-        <div>
+                <button (click)="nextImage(p.immersive_details?.thumbnails)" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                </button>
+                <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-x-2">
+                  @for (img of p.immersive_details?.thumbnails || [p.thumbnail]; track $index) {
+                    <button (click)="currentImageIndex.set($index)" class="h-2 w-2 rounded-full transition-colors" [ngClass]="currentImageIndex() === $index ? 'bg-slate-800' : 'bg-slate-400 hover:bg-slate-600'"></button>
+                  }
+                </div>
+              </div>
+              <!-- Galería para Escritorio -->
+              <div class="hidden lg:grid grid-cols-6 gap-4">
+                 <div class="col-span-1 space-y-3 max-h-[560px] overflow-y-auto pr-2">
+                   @for (img of p.immersive_details?.thumbnails || [p.thumbnail]; track $index) {
+                     <button (click)="currentImageIndex.set($index)" class="aspect-square w-full rounded-md overflow-hidden focus:outline-none">
+                       <img [src]="img" [alt]="p.title + ' thumbnail ' + $index" class="h-full w-full object-cover transition-opacity" [ngClass]="currentImageIndex() === $index ? 'opacity-100 ring-2 ring-sky-500' : 'opacity-60 hover:opacity-100'">
+                     </button>
+                   }
+                 </div>
+                 <div class="w-full aspect-square bg-slate-100 rounded-lg overflow-hidden border col-span-5">
+                   <img [src]="(p.immersive_details?.thumbnails || [p.thumbnail])?.[currentImageIndex()]" [alt]="p.title" class="h-full w-full object-cover">
+                 </div>
+              </div>
+                <div>
           <h4 class="text-lg font-semibold text-slate-800 mb-4">Opciones de Compra</h4>
           <div class="flex flex-col space-y-3">
             @for (store of p.immersive_details?.stores; track $index) {
@@ -105,18 +107,17 @@
             }
           </div>
         </div>
-      </div>
-
+            </div>
+            <!-- Columna de Detalles (con acordeón) -->
             <div class="flex flex-col">
               <div>
                 <p class="text-sm font-medium text-sky-600">{{ p.immersive_details?.brand }}</p>
                 <h1 class="text-2xl font-bold text-slate-800 mt-1">{{ p.title }}</h1>
                 <p class="text-2xl font-bold text-slate-900 mt-2">{{ p.price }}</p>
               </div>
-              
-
+              <!-- Acordeón para Detalles -->
               <div class="mt-6 space-y-3 border-t pt-6">
-
+                <!-- Sección Características -->
                 <div>
                   <button (click)="toggleSection('features')" class="w-full flex justify-between items-center py-3 text-left font-semibold text-slate-800">
                     <span>Características</span>
@@ -127,10 +128,11 @@
                       @for (feature of p.immersive_details?.about_the_product?.features; track $index) {
                         <li><strong>{{ feature.title }}:</strong> {{ feature.value }}</li>
                       }
+                      @if (!p.immersive_details?.about_the_product?.features?.length) { <li class="text-slate-400">No hay características disponibles.</li> }
                     </ul>
                   </div>
                 </div>
-    
+                <!-- Sección Pros -->
                 <div>
                   <button (click)="toggleSection('pros')" class="w-full flex justify-between items-center py-3 text-left font-semibold text-slate-800">
                     <span>Pros</span>
@@ -139,10 +141,11 @@
                   <div class="overflow-hidden transition-all duration-300" [ngClass]="openSection() === 'pros' ? 'max-h-screen pt-2 pb-4' : 'max-h-0'">
                     <ul class="text-sm space-y-2 text-green-700">
                       @for (pro of p.pros; track $index) { <li>- {{ pro }}</li> }
+                      @if (!p.pros?.length) { <li class="text-slate-400">No hay pros disponibles.</li> }
                     </ul>
                   </div>
                 </div>
-    
+                <!-- Sección Contras -->
                 <div>
                   <button (click)="toggleSection('cons')" class="w-full flex justify-between items-center py-3 text-left font-semibold text-slate-800">
                     <span>Contras</span>
@@ -151,16 +154,16 @@
                   <div class="overflow-hidden transition-all duration-300" [ngClass]="openSection() === 'cons' ? 'max-h-screen pt-2 pb-4' : 'max-h-0'">
                     <ul class="text-sm space-y-2 text-red-700">
                       @for (con of p.contras; track $index) { <li>- {{ con }}</li> }
+                      @if (!p.contras?.length) { <li class="text-slate-400">No hay contras disponibles.</li> }
                     </ul>
                   </div>
                 </div>
               </div>
-
-          
             </div>
           </div>
         }
-       </div>
+      </div>
     </div>
   </div>
 }
+

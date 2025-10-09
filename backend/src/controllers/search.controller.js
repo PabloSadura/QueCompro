@@ -60,10 +60,19 @@ export default async function handleSearchStream(req, res) {
             total_results: totalResults,
         };
         sendEvent({ status: "Guardando búsqueda y recomendación..." });
-        await Promise.all([
-            saveSearchToFirebase(userQuery, userId, finalRecommendation),
-            sendEvent({ status: "Completado", result: finalRecommendation })
-        ]);
+       
+         // 4. Primero, guardamos en Firebase y esperamos a que nos devuelva el ID de la búsqueda.
+        const searchId = await saveSearchToFirebase(userQuery, userId, finalRecommendation);
+
+        // 5. Luego, creamos un nuevo objeto de resultado que SÍ incluye el ID.
+        const resultToSend = {
+            ...finalRecommendation,
+            id: searchId // Este es el 'collectionId' que el frontend necesita.
+        };
+
+        // 6. Finalmente, enviamos el evento 'Completado' con el objeto que contiene el ID.
+        sendEvent({ status: "Completado", result: resultToSend });
+
         
     } catch (err) {
         console.error("Error en el flujo de búsqueda:", err);

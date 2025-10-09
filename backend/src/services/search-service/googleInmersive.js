@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 export async function fetchImmersiveProductDetails(apiUrl) {
     
-    const apiKey  = process.env.SERPAPI_KEY;
+    const apiKey  = process.env.SERPAPI_KEY1;
     let finalUrl = apiUrl;
 
     if (!apiUrl) return null;
