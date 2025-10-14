@@ -1,7 +1,5 @@
 // src/app/pages/home/home.ts
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SearchComponent } from '../../components/search/search';
 import { ProductCardsComponent } from '../../components/product-card/product-card.component';

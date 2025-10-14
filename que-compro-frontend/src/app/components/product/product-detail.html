@@ -26,10 +26,10 @@
                 </div>
               }
             </div>
-            <button (click)="prevImage(p.thumbnails)" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
+            <button (click)="prevImage(p.immersive_details?.thumbnails)" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
             </button>
-            <button (click)="nextImage(p.thumbnails)" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
+            <button (click)="nextImage(p.immersive_details?.thumbnails)" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/60 p-2 text-slate-700 hover:bg-white focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </button>
 
@@ -41,14 +41,14 @@
           </div>
           <div class="hidden lg:grid grid-cols-6 gap-4">
             <div class="col-span-1 flex flex-col gap-3">
-              @for (img of p.thumbnails; track $index) {
+              @for (img of p.immersive_details?.thumbnails; track $index) {
                 <button (click)="currentImageIndex.set($index)" class="aspect-square w-full rounded-md overflow-hidden focus:outline-none">
                   <img [src]="img" [alt]="p.title + ' thumbnail ' + $index" class="h-full w-full object-cover transition-opacity" [ngClass]="currentImageIndex() === $index ? 'opacity-100 ring-2 ring-sky-500' : 'opacity-60 hover:opacity-100'">
                 </button>
               }
             </div>
             <div class="w-full aspect-square rounded-lg overflow-hidden border col-span-5 flex-shrink-0 flex justify-center items-center">
-              <img [src]="p.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="self-center">
+              <img [src]="p.immersive_details?.thumbnails?.[currentImageIndex()]" [alt]="p.title" class="self-center">
             </div>
           </div>
         </div>
